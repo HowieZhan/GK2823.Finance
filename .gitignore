@@ -351,3 +351,5 @@ MigrationBackup/
 
 /Finance.API/appsettings.json
 /FinanceTaskRunner/appsettings.json
+/Finance.API/appsettings.debug.json
+/FinanceTaskRunner/appsettings.debug.json
