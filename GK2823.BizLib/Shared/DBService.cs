@@ -10,7 +10,7 @@ namespace GK2823.BizLib.Shared
 
         public DbConnection FinanceDB { get { return FinanceIntDB.GetOpenConnection(); } }
 
-        public FinanceDB FinanceIntDB { get; } =
+        private FinanceDB FinanceIntDB { get; } =
            DatabaseProvider<FinanceDB>.Instance;
     }
 }
