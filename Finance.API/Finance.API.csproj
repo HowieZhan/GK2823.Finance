@@ -21,4 +21,13 @@
     <ProjectReference Include="..\GK2823.UtilLib\GK2823.UtilLib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.debug.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
