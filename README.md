@@ -1,11 +1,11 @@
 # GK2823.Finance
 POWER BY DOTNET CORE 3+
 
-跟随.netcore2.0至如今最新稳定的3.18，爬过坑，也绕过很多路...
-如果默认的webapi/mvc就是一台新车，那么控制台程序是引擎，所以我放弃使用默认的webapi模板作为api服务端...
-假如学会了编辑.csproj文件，很多东西也就不需要gui界面配置了...
-代码不断优化，直至.net5第三版到来...
+.netcore2.0=>.netcore3.1.8
 
 email
 zhanyonghao94@126.com
+
+OR
+
 641525439@qq.com
