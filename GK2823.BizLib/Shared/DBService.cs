@@ -12,5 +12,8 @@ namespace GK2823.BizLib.Shared
 
         private FinanceDB FinanceIntDB { get; } =
            DatabaseProvider<FinanceDB>.Instance;
+
+
+        public PetaPocoDBContext FinancePPDB { get { return Shared.FinancePPDB.GetContext(); } }
     }
 }

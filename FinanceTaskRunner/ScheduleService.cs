@@ -56,6 +56,10 @@ namespace Finance.TaskRunner
                         //this.GetFromXuangubao(state.ToString());
                         _xuangubaoService.GetFromXuangubaoAsync(state.ToString());
                         ; break;
+                    case "get_from_xuangubao_0":
+                        //this.GetFromXuangubao(state.ToString());
+                        _xuangubaoService.GetFromXuangubao(state.ToString());
+                        ; break;
                     case "test":
                         var a = 410;
                         var b = 847;

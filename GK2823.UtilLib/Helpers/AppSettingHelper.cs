@@ -97,15 +97,8 @@ namespace GK2823.UtilLib.Helpers
         public static string GetConnectDBString(string dbKey, string key)
         {
             string result = "";
-            //if (ifUseApollo)
-            //    result = GetConfigByApollo(key);
-
-            //if (result.Equals("") || result.Equals(DEFAULT_VALUE))
-            //{
-
             var section = GetAppSection(CONNECT_DB_KEY).GetSection(dbKey);
             result = GetAppValue<string>(key, section);
-            //}
             return result;
         }
 
