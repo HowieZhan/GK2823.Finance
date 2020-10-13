@@ -18,25 +18,29 @@ namespace GK2823.BizLib.Shared
         public virtual void Dispose() { }
         public abstract string GetConnectionString();
 
-        public static DbConnection _conn;
+      //  public static DbConnection _conn;
         public DbConnection GetOpenConnection()
         {
-            if(_conn==null)
-            {
-                _conn = Factory.CreateConnection();
+            //var _conn = Factory.CreateConnection();
+            //if (_conn==null)
+            //{
+              var  _conn = Factory.CreateConnection();
                 _conn.ConnectionString = GetConnectionString();
-                bool wasColsed = _conn.State == ConnectionState.Closed;
-                if (wasColsed)
-                {
-                    _conn.Open();
-                }
-                else
-                {
-                    _conn.CloseAsync();
-                }
-            }
-            
-           // if (conn.State != ConnectionState.Open) throw new InvalidOperationException("should be open!");
+            //    bool wasColsed = _conn.State == ConnectionState.Closed;
+            //    if (wasColsed)
+            //    {
+            //        _conn.Open();
+            //    }
+            //    else
+            //    {
+            //        _conn.Close();
+            //    }
+            //}
+
+            //if (_conn.State != ConnectionState.Open)
+            //{
+            //    _conn.Open();
+            //}
             return _conn;
         }
 
@@ -44,7 +48,7 @@ namespace GK2823.BizLib.Shared
         {
             var conn = Factory.CreateConnection();
             conn.ConnectionString = GetConnectionString();
-            if (conn.State != ConnectionState.Closed) throw new InvalidOperationException("should be closed!");
+            if (conn.State != ConnectionState.Closed) conn.Close();
             return conn;
         }
 

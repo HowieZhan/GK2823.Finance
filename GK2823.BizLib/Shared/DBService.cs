@@ -8,7 +8,7 @@ namespace GK2823.BizLib.Shared
     public class DBService
     {
 
-        public DbConnection FinanceDB { get { return FinanceIntDB.GetOpenConnection(); } }
+        public  DbConnection FinanceDB { get { return FinanceIntDB.GetOpenConnection(); } }
 
         private FinanceDB FinanceIntDB { get; } =
            DatabaseProvider<FinanceDB>.Instance;

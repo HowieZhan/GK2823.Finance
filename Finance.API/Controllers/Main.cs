@@ -30,14 +30,12 @@ namespace Finance.API.Controllers
             return Ok(result);
         }
 
-        //[HttpPost("api/GetHistoryFromXuangubaoAsync")]
-        //public IActionResult GetHistoryFromXuangubao()
-        //{
-        //    var result = new MsgResult();
-        //    var list = _xuangubaoService.GetHistoryFromXuangubaoAsync("sd");
-        //    //var _list = _mapperService.MapCheck<List<APIPoolDetail>>(list);
-        //    //result.data = _list;
-        //    return Ok(result);
-        //}
+        [HttpPost("api/GetEverydayLBS")]
+        public IActionResult GetEverydayLBS()
+        {
+            var result = new MsgResult();
+            result.data = _xuangubaoService.GetEverydayLBSList();
+            return Ok(result);
+        }
     }
 }

@@ -277,11 +277,10 @@ namespace GK2823.BizLib.Finance.Services
             return list;
         }
 
-        public MsgResult GetFromXuangubao(string taskName)
-        {
-            var result = new MsgResult();
-            var item = _dBService.FinancePPDB.FirstOrDefault<dynamic>("select * from task_log");
-            return result;
+       public List<EverydayLBS> GetEverydayLBSList()
+        {        
+            var list = _dBService.FinanceDB.GetAll<EverydayLBS>().ToList();         
+            return list;
         }
     }
 }

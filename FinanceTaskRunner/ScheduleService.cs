@@ -53,18 +53,13 @@ namespace Finance.TaskRunner
                 switch (state.ToString())
                 {
                     case "get_from_xuangubao":
-                        //this.GetFromXuangubao(state.ToString());
                         _xuangubaoService.GetFromXuangubaoAsync(state.ToString());
                         ; break;
                     case "get_from_xuangubao_0":
-                        //this.GetFromXuangubao(state.ToString());
-                        _xuangubaoService.GetFromXuangubao(state.ToString());
+                       
                         ; break;
                     case "test":
-                        var a = 410;
-                        var b = 847;
-                        var c = Convert.ToDouble(a / b).ToString("0%");
-                        var d = a / b;
+                        Test();
                         break;
                 }
             }
@@ -74,10 +69,18 @@ namespace Finance.TaskRunner
             }
         }
 
-        //private async Task GetFromXuangubao(string taskName)
-        //{
-        //    MsgResult msg = await _xuangubaoService.GetFromXuangubaoAsync(taskName);
-        //}
+        public void Test()
+        {
+            int a = 0;
+            string b = string.Empty;
+            this.GetItems(out a,out b);
+        }
+
+        public void GetItems(out int aa, out string bb)
+        {
+            aa = 1;
+            bb = "Hello";
+        }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
