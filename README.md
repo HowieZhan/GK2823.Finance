@@ -20,3 +20,7 @@ mailkit
 nlog
 kestrelserver
 
+
+每周至少更新一次，热爱技术，热爱生活的可以联系我哦！
+commit onece a week at lease，welcome email.
+
