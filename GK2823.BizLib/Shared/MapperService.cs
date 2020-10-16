@@ -29,11 +29,20 @@ namespace GK2823.BizLib.Shared
                 ForMember(tag => tag.thatDate, sour => sour.MapFrom(p => 
                       TimeHelper.ConvertToDateTime((long)p.last_limit_up).Date.ToString("yyyyMMdd")
                    
-                )).ForMember(tag => tag.strWeek, sour => sour.MapFrom(p =>
-
-               
+                )).ForMember(tag => tag.strWeek, sour => sour.MapFrom(p =>    
                 this.chineseStrWeek((long)p.last_limit_up)
                 ));
+
+
+                cfg.CreateMap<PoolDetail, APIPoolDetailWithoutST>().
+               ForMember(tag => tag.thatDate, sour => sour.MapFrom(p =>
+                     p.last_limit_up
+
+               )).ForMember(tag => tag.strWeek, sour => sour.MapFrom(p =>
+               this.chineseStrWeek((p.last_limit_up.ToString())
+               ))).ForMember(tag => tag.symbol, sour => sour.MapFrom(p =>
+                string.Empty
+               ));
 
 
                 //var tp = TimeHelper.ConvertToDateTime((long)item.last_limit_up).Date;
@@ -62,7 +71,24 @@ namespace GK2823.BizLib.Shared
             }
             return str;
         }
-        
+
+        private string chineseStrWeek(string tT)
+        {
+            tT =TimeHelper.ConvertToyMd(tT);
+            var k = Convert.ToDateTime(tT).Date.DayOfWeek.ToString();
+            var str = string.Empty;
+            switch (k)
+            {
+                case "Monday": str = "周一"; break;
+                case "Tuesday": str = "周二"; break;
+                case "Wednesday": str = "周三"; break;
+                case "Thursday": str = "周四"; break;
+                case "Friday": str = "周五"; break;
+                default: str = "未知"; break;
+            }
+            return str;
+        }
+
 
         public T MapCheck<T>(object t)
         {

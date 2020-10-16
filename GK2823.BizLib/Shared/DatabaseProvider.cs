@@ -18,38 +18,40 @@ namespace GK2823.BizLib.Shared
         public virtual void Dispose() { }
         public abstract string GetConnectionString();
 
-      //  public static DbConnection _conn;
-        public DbConnection GetOpenConnection()
-        {
-            //var _conn = Factory.CreateConnection();
-            //if (_conn==null)
-            //{
-              var  _conn = Factory.CreateConnection();
-                _conn.ConnectionString = GetConnectionString();
-            //    bool wasColsed = _conn.State == ConnectionState.Closed;
-            //    if (wasColsed)
-            //    {
-            //        _conn.Open();
-            //    }
-            //    else
-            //    {
-            //        _conn.Close();
-            //    }
-            //}
 
-            //if (_conn.State != ConnectionState.Open)
-            //{
-            //    _conn.Open();
-            //}
+//public static DbConnection _conn;
+
+public DbConnection GetOpenConnection()
+        {
+            
+             var _conn = Factory.CreateConnection();
+          
+              
+                _conn.ConnectionString = GetConnectionString();
+
+
+
+                if (_conn.State == ConnectionState.Closed)
+                {
+
+                    _conn.Open();
+
+                }
+           
+            //else
+            // {
+            //     _conn.Close();
+            // }
+
             return _conn;
         }
 
         public DbConnection GetClosedConnection()
         {
-            var conn = Factory.CreateConnection();
-            conn.ConnectionString = GetConnectionString();
-            if (conn.State != ConnectionState.Closed) conn.Close();
-            return conn;
+            var _conn = Factory.CreateConnection();
+            //_conn.ConnectionString = GetConnectionString();
+            if (_conn.State != ConnectionState.Closed) _conn.Close();
+            return _conn;
         }
 
         public DbParameter CreateRawParameter(string name, object value)

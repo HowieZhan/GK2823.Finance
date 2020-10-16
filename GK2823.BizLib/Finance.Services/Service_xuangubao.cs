@@ -18,12 +18,17 @@ namespace GK2823.BizLib.Finance.Services
     {
         private readonly IHttpClientFactory _clientFactory;
         private readonly DBService _dBService;
-        private readonly MapperService _mapperService;
+      
+        private static MapperService _mapperService;
+        private readonly IRedisService _redisService;
         public Service_xuangubao()
         {
             _clientFactory = AutofacContainer.Resolve<IHttpClientFactory>();
+          
             _dBService = AutofacContainer.Resolve<DBService>();
+          
             _mapperService = AutofacContainer.Resolve<MapperService>();
+            _redisService= AutofacContainer.Resolve<IRedisService>();
         }
 
         public async Task<MsgResult> GetHistoryFromXuangubaoAsync(string taskName)
@@ -277,9 +282,45 @@ namespace GK2823.BizLib.Finance.Services
             return list;
         }
 
+        public List<PoolDetail> GetAllTopPoolDetailWithoutST()
+        {
+            
+
+
+            var list = new List<PoolDetail>();
+            try
+            {
+                
+              
+                    var coloum = "last_limit_up,limit_up_days,stock_chi_name";
+                    string sql = $"select {coloum} from view_pool_detail ";
+
+
+                    // var totayDBData = _dBService.FinancePPDB.Query<_PoolDetail>(sql).ToList();
+                    var totayDBData = _dBService.FinanceDB.Query<_PoolDetail>(sql).ToList();
+
+                    list = _mapperService.MapCheck<List<PoolDetail>>(totayDBData);
+                    _dBService.FinanceDB.Close();
+
+                  
+               
+            }
+            catch (Exception ex)
+            {
+                this.SetTaskLog("error_GetTodayPoolDetailWithoutST", ex.Message + ex.StackTrace);
+            }
+            return list;
+        }
+
        public List<EverydayLBS> GetEverydayLBSList()
-        {        
-            var list = _dBService.FinanceDB.GetAll<EverydayLBS>().ToList();         
+        {
+
+
+
+           
+            //var list = _dBService.FinancePPDB.Query<EverydayLBS>("select * from view_everyday_lbs").ToList();
+            var list = _dBService.FinanceDB.GetAll<EverydayLBS>().ToList();
+            _dBService.FinanceDB.Close();
             return list;
         }
     }

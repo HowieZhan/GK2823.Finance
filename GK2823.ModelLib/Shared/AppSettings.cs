@@ -16,7 +16,7 @@ namespace GK2823.ModelLib.Shared
         public _MQHandle MQHandle { get; set; }
         public _MainEmail Email { get; set; }
         public List<HttpReqs> Webs { get; set; }
-
+        public string redis { get; set; }
         public class HttpReqs
         {
             public string Url { get; set; }

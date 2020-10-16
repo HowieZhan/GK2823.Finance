@@ -137,4 +137,16 @@ namespace GK2823.ModelLib.Finance.API
 
         public string strWeek { get; set; }
     }
+
+    public class APIPoolDetailWithoutST
+    {
+        public decimal limit_up_days { get; set; }
+        public string symbol { get; set; }
+
+        public string stock_chi_name { get; set; }
+
+        public string thatDate { get; set; }
+
+        public string strWeek { get; set; }
+    }
 }

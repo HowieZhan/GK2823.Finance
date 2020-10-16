@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using GK2823.ModelLib.Shared;
 using Microsoft.Extensions.Options;
 
+
 namespace Finance.API
 {
     public class Startup
@@ -34,9 +35,10 @@ namespace Finance.API
             services.AddControllers();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<MapperService>();
-            services.AddSingleton<Service_xuangubao>();
-            services.AddSingleton<DBService>();
+            services.AddTransient<Service_xuangubao>();
+            services.AddTransient<DBService>();
             services.AddHttpClient();
+            services.AddSingleton<IRedisService, RedisService>();
             services.AddCors(options =>
             {
                 options.AddPolicy("any123", builder =>

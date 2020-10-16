@@ -9,6 +9,7 @@ namespace GK2823.UtilLib.Helpers
     public class AppSettingHelper
     {
         const string CONNECT_DB_KEY = "FYJ_ConnectionStrings";
+        const string REDIS_KEY = "redis";
         static AppSettingHelper()
         {
             var config = AutofacContainer.GetService<IConfiguration>();
@@ -99,6 +100,13 @@ namespace GK2823.UtilLib.Helpers
             string result = "";
             var section = GetAppSection(CONNECT_DB_KEY).GetSection(dbKey);
             result = GetAppValue<string>(key, section);
+            return result;
+        }
+
+        public static string GetRedisString()
+        {
+            string result = "";
+            result = _config.GetValue<string>(REDIS_KEY);       
             return result;
         }
 

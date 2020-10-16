@@ -11,5 +11,6 @@ namespace GK2823.ModelLib.Finance.API
         public int lb_count { get; set; }
         [Key]
         public string stime { get; set; }
+        public string stock_chi_name { get; set; }
     }
 }

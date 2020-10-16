@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace GK2823.UtilLib.Helpers
@@ -27,6 +28,12 @@ namespace GK2823.UtilLib.Helpers
         {
             DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             return (long)(dateTime.AddHours(-8) - Jan1st1970).TotalSeconds;
+        }
+
+        public static string ConvertToyMd(string strDate)
+        {          
+            strDate = DateTime.ParseExact(strDate, "yyyyMMdd", CultureInfo.CurrentCulture).ToString("yyyy-MM-dd");
+            return strDate;
         }
     }
 }

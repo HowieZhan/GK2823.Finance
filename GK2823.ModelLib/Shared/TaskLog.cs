@@ -9,6 +9,7 @@ namespace GK2823.ModelLib.Shared
     [Table("task_log")]
     public class TaskLog
     {
+        public const string seedName = "TL";
         [Key]
         public int id { get; set; }
         public string task_name { get; set; }

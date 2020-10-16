@@ -22,11 +22,13 @@ namespace Finance.TaskRunner
         private readonly IOptions<AppSettings> _appSettings;
         //private readonly IHttpClientFactory _clientFactory;
         private readonly Service_xuangubao _xuangubaoService;
+       
         public ScheduleService()
         {
             _appSettings = AutofacContainer.Resolve<IOptions<AppSettings>>();
             // _clientFactory= AutofacContainer.Resolve<IHttpClientFactory>();
             _xuangubaoService = AutofacContainer.Resolve<Service_xuangubao>();
+            
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -65,15 +67,15 @@ namespace Finance.TaskRunner
             }
             catch (Exception ex)
             {
-                //log
+#if RELEASE
+                _xuangubaoService.SendEmail(_appSettings.Value.MainEmail.UserAddress,"自动任务系统异常_finance.taskrunner",ex.Message+ex.StackTrace);
+#endif
             }
         }
 
         public void Test()
         {
-            int a = 0;
-            string b = string.Empty;
-            this.GetItems(out a,out b);
+           
         }
 
         public void GetItems(out int aa, out string bb)

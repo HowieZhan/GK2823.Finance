@@ -5,6 +5,7 @@ using GK2823.UtilLib.Helpers;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace GK2823.BizLib.Shared
@@ -145,5 +146,66 @@ namespace GK2823.BizLib.Shared
             mailer.AddToAddress(toEmail);
             _ = MailHelper.SendAsync(mailer);
         }
+
+        public string CreateSeedNo(string seedName,bool useDate=true,int seedNoLength=4)
+        {
+            string seedNo = string.Empty;
+            var targetItem = _dBService.FinanceDB.Query<Seeds>("select * from seeds").Where(p => p.seed_name == seedName).FirstOrDefault();
+            if(targetItem!=null)
+            {
+                using (var trans = _dBService.FinanceDB.BeginTransaction())
+                {
+                    try
+                    {
+                        var item = targetItem;
+
+                        seedNoLength = targetItem.seed_no.Length;
+                        var sameDay = item.seed_date == DateTime.Now.Date;
+                        if (sameDay)
+                        {
+                            item.seed_no = (Convert.ToInt32(item.seed_no) + 1).ToString().PadLeft(seedNoLength, '0');
+                        }
+                        else
+                        {
+                            item.seed_no = "1".PadLeft(seedNoLength, '0');
+                            item.seed_date = DateTime.Now.Date;
+                        }                   
+                        item.last_item = item.seed_name + (item.is_use_date==1 ? item.seed_date.ToString("yyyyMMdd") : string.Empty) + item.seed_no;
+                        _dBService.FinanceDB.Update<Seeds>(item);
+                        seedNo = item.seed_no;
+                        trans.Commit();
+                    }
+                    catch(Exception ex)
+                    {
+                        trans.Rollback();
+                    }
+                }
+            }
+            else
+            {
+                using (var trans=_dBService.FinanceDB.BeginTransaction())
+                {
+                    try
+                    {
+                        var item = new Seeds();
+                        item.is_use_date = useDate ? 1 : 0;
+                        item.seed_no = "1".PadLeft(seedNoLength, '0');
+                        item.seed_name = seedName;
+                        item.seed_date = DateTime.Now.Date;
+                        item.last_item = item.seed_name + (useDate ? item.seed_date.ToString("yyyyMMdd") : string.Empty) + item.seed_no;
+                        _dBService.FinanceDB.Insert<Seeds>(item);
+                        seedNo = item.seed_no;
+                        trans.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                    }
+                }
+            }
+            return seedNo;
+        }
+
+
     }
 }

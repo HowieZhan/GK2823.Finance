@@ -9,6 +9,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Http;
 using GK2823.BizLib.Finance.Services;
 using GK2823.BizLib.Shared;
+using GK2823.ModelLib.Shared;
 
 namespace Finance.TaskRunner
 {
@@ -61,6 +62,7 @@ namespace Finance.TaskRunner
                     services.AddSingleton<DBService>();
                     services.AddSingleton<Service_xuangubao>();
                     services.AddSingleton<MapperService>();
+                  
                     AutofacContainer.Build(services);
                 });
 
