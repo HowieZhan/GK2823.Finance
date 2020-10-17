@@ -71,5 +71,53 @@ namespace Finance.API.Controllers
             result.data = _list;
             return Ok(result);
         }
+
+        [HttpPost("api/GetEverydayBrokenLBS")]
+        public IActionResult GetEverydayBrokenLBS()
+        {
+            var result = new MsgResult();
+            var _list = new List<EverydayBrokenLBS>();
+            var redisKey = Constants.Redis.FAPI_GetEverydayBrokenLBS;
+            var redislist = _redisService.GetCache(redisKey) as List<EverydayBrokenLBS>;
+            if (redislist == null)
+            {
+                _list = _xuangubaoService.GetEverydayBrokenLBSList();
+                if (_list.Count() > 0)
+                {
+                    _redisService.SetCache(redisKey, _list);
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromMinutes(5));
+                }
+            }
+            else
+            {
+                _list = redislist;
+            }
+            result.data = _list;
+            return Ok(result);
+        }
+
+        [HttpPost("api/GetEverydayBrokenPercent")]
+        public IActionResult GetEverydayBrokenPercent()
+        {
+            var result = new MsgResult();
+            var _list = new List<BrokenPercent>();
+            var redisKey = Constants.Redis.FAPI_BrokenPercent;
+            var redislist = _redisService.GetCache(redisKey) as List<BrokenPercent>;
+            if (redislist == null)
+            {
+                _list = _xuangubaoService.GetEverydayBrokenPercent();
+                if (_list.Count() > 0)
+                {
+                    _redisService.SetCache(redisKey, _list);
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromMinutes(5));
+                }
+            }
+            else
+            {
+                _list = redislist;
+            }
+            result.data = _list;
+            return Ok(result);
+        }
     }
 }

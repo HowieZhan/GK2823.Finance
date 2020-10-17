@@ -15,15 +15,28 @@ namespace GK2823.BizLib.Shared
         {
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<PoolDetail, _PoolDetail>()
+                cfg.CreateMap<PoolDetail, LimitUp>()
                 .ForMember(tag => tag.limit_timeline, sour => sour.MapFrom(p =>JsonConvert.SerializeObject(p.limit_timeline)))
                 .ForMember(tag => tag.surge_reason, sour => sour.MapFrom(p => JsonConvert.SerializeObject(p.surge_reason)))
                 .ForMember(tag => tag.id, sour => sour.Ignore());
 
-                cfg.CreateMap<_PoolDetail, PoolDetail>()
+                cfg.CreateMap<LimitUp, PoolDetail>()
               .ForMember(tag => tag.limit_timeline, sour => sour.MapFrom(p =>JsonConvert.DeserializeObject<PoolDetail.LimitTimeline>(p.limit_timeline)))
               .ForMember(tag => tag.surge_reason, sour => sour.MapFrom(p =>JsonConvert.DeserializeObject<PoolDetail.SurgeReason>(p.surge_reason)))
                .ForMember(tag => tag.id, sour => sour.Ignore());
+
+
+                cfg.CreateMap<PoolDetail, limitUpBroken>()
+               .ForMember(tag => tag.limit_timeline, sour => sour.MapFrom(p => JsonConvert.SerializeObject(p.limit_timeline)))
+               .ForMember(tag => tag.surge_reason, sour => sour.MapFrom(p => JsonConvert.SerializeObject(p.surge_reason)))
+               .ForMember(tag => tag.id, sour => sour.Ignore());
+
+                cfg.CreateMap<limitUpBroken, PoolDetail>()
+              .ForMember(tag => tag.limit_timeline, sour => sour.MapFrom(p => JsonConvert.DeserializeObject<PoolDetail.LimitTimeline>(p.limit_timeline)))
+              .ForMember(tag => tag.surge_reason, sour => sour.MapFrom(p => JsonConvert.DeserializeObject<PoolDetail.SurgeReason>(p.surge_reason)))
+               .ForMember(tag => tag.id, sour => sour.Ignore());
+
+
 
                 cfg.CreateMap<PoolDetail, APIPoolDetail>().
                 ForMember(tag => tag.thatDate, sour => sour.MapFrom(p => 

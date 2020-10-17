@@ -62,7 +62,7 @@ namespace Finance.TaskRunner
                     services.AddSingleton<DBService>();
                     services.AddSingleton<Service_xuangubao>();
                     services.AddSingleton<MapperService>();
-                  
+                    services.AddSingleton<IRedisService,RedisService>();
                     AutofacContainer.Build(services);
                 });
 

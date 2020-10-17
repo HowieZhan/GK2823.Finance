@@ -6,6 +6,7 @@ using System.Text;
 
 namespace GK2823.ModelLib.Finance.API
 {
+
     public class PoolDetail
     {
         public int id { get; set; }
@@ -77,7 +78,7 @@ namespace GK2823.ModelLib.Finance.API
 
     }
 
-    [Table("pool_detail")]
+   
     public class _PoolDetail
     {
         [Key]
@@ -148,5 +149,17 @@ namespace GK2823.ModelLib.Finance.API
         public string thatDate { get; set; }
 
         public string strWeek { get; set; }
+    }
+
+    [Table("pool_detail")]
+    public class LimitUp: _PoolDetail
+    {
+
+    }
+
+    [Table("limit_up_broken")]
+    public class limitUpBroken : _PoolDetail
+    {
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using GK2823.BizLib.Finance.Services;
+using GK2823.ModelLib.Finance.API;
 using GK2823.ModelLib.Shared;
 using GK2823.UtilLib.Helpers;
 using Microsoft.Extensions.Hosting;
@@ -22,13 +23,13 @@ namespace Finance.TaskRunner
         private readonly IOptions<AppSettings> _appSettings;
         //private readonly IHttpClientFactory _clientFactory;
         private readonly Service_xuangubao _xuangubaoService;
-       
+        private readonly IRedisService _redisService;
         public ScheduleService()
         {
             _appSettings = AutofacContainer.Resolve<IOptions<AppSettings>>();
             // _clientFactory= AutofacContainer.Resolve<IHttpClientFactory>();
             _xuangubaoService = AutofacContainer.Resolve<Service_xuangubao>();
-            
+            _redisService= AutofacContainer.Resolve<IRedisService>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -57,8 +58,8 @@ namespace Finance.TaskRunner
                     case "get_from_xuangubao":
                         _xuangubaoService.GetFromXuangubaoAsync(state.ToString());
                         ; break;
-                    case "get_from_xuangubao_0":
-                       
+                    case "limitUpBroken":
+                        _xuangubaoService.GetLimitUpBroken(state.ToString());
                         ; break;
                     case "test":
                         Test();
@@ -75,14 +76,10 @@ namespace Finance.TaskRunner
 
         public void Test()
         {
-           
+            _redisService.RemoveAllCache();
         }
 
-        public void GetItems(out int aa, out string bb)
-        {
-            aa = 1;
-            bb = "Hello";
-        }
+      
 
         public Task StopAsync(CancellationToken cancellationToken)
         {

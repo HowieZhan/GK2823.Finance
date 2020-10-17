@@ -23,12 +23,12 @@ namespace GK2823.BizLib.Shared
 
 public DbConnection GetOpenConnection()
         {
-            
-             var _conn = Factory.CreateConnection();
-          
-              
-                _conn.ConnectionString = GetConnectionString();
+           
+               var _conn = Factory.CreateConnection();
 
+
+                _conn.ConnectionString = GetConnectionString();
+            
 
 
                 if (_conn.State == ConnectionState.Closed)

@@ -69,24 +69,24 @@ namespace GK2823.BizLib.Finance.Services
 
                             dynamicParams.Add("todayTime", nowTime);
                             dynamicParams.Add("tomorrowTime", tomTime);
-                            var totayDBData = _dBService.FinanceDB.Query<_PoolDetail>("select * from pool_detail where last_limit_up>=@todayTime and last_limit_up<@tomorrowTime", dynamicParams).ToList();
+                            var totayDBData = _dBService.FinanceDB.Query<LimitUp>("select * from pool_detail where last_limit_up>=@todayTime and last_limit_up<@tomorrowTime", dynamicParams).ToList();
 
                             var listData = new List<int>();
                             foreach (var item in data)
                             {
                                 var hasItem = totayDBData.Where(p => p.symbol == item.symbol).FirstOrDefault();
-                                var k = _mapperService.MapCheck<_PoolDetail>(item);
+                                var k = _mapperService.MapCheck<LimitUp>(item);
                                 if (hasItem != null)
                                 {
                                     k.id = hasItem.id;
-                                    var b = _dBService.FinanceDB.Update<_PoolDetail>(k);
+                                    var b = _dBService.FinanceDB.Update<LimitUp>(k);
 
                                     listData.Add(k.id);
                                 }
                                 else
                                 {
 
-                                    var a = _dBService.FinanceDB.Insert<_PoolDetail>(k);
+                                    var a = _dBService.FinanceDB.Insert<LimitUp>(k);
                                     listData.Add(k.id);
                                 }
                             }
@@ -112,6 +112,108 @@ namespace GK2823.BizLib.Finance.Services
                 }
                 catch (Exception ex)
                 {
+                    continue;
+                }
+                finally
+                {
+                    tT = tT.AddDays(1);
+                }
+            }
+
+
+            return result;
+        }
+
+        public async Task<MsgResult> GetAllLimitUpBroken(string taskName)
+        {
+            var result = new MsgResult();
+
+            var tTime = Convert.ToDateTime("2020/04/13");
+            for (var tT = tTime; tT < DateTime.Now; tT.AddDays(1))
+            {
+                try
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get,
+                   $"https://flash-api.xuangubao.cn/api/pool/detail?pool_name=limit_up_broken&date={tT.Date.ToString("yyyy-MM-dd")}");
+
+
+                    var client = _clientFactory.CreateClient();
+
+                    var response = await client.SendAsync(request);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        var res = JsonConvert.DeserializeObject<MsgResult>(responseString);
+                        if (res.code == 20000)
+                        {
+                            var data = JsonConvert.DeserializeObject<List<PoolDetail>>(JsonConvert.SerializeObject(res.data));
+                            if(data==null)
+                            {
+                                var aa = "";
+                            }
+                            var nowTime = TimeHelper.ConvertToTimeStamp(tT.Date);
+                            var tomTime = TimeHelper.ConvertToTimeStamp(tT.AddDays(1).Date);
+                            //nowTime = 1601395200;
+                            //tomTime = 1601481600;
+                            data = data.Where(p => p.last_break_limit_up >= nowTime && p.last_break_limit_up < tomTime).ToList();
+                            if (data.Count == 0)
+                            {
+                                throw new Exception("无更新数据");
+                            }
+
+                            var dynamicParams = new DynamicParameters();
+
+                            dynamicParams.Add("todayTime", nowTime);
+                            dynamicParams.Add("tomorrowTime", tomTime);
+                            var totayDBData = _dBService.FinanceDB.Query<limitUpBroken>("select * from limit_up_broken where last_break_limit_up>=@todayTime and last_break_limit_up<@tomorrowTime", dynamicParams).ToList();
+
+                            var listData = new List<int>();
+                            foreach (var item in data)
+                            {
+                                var hasItem = totayDBData.Where(p => p.symbol == item.symbol).FirstOrDefault();
+                                var k = _mapperService.MapCheck<limitUpBroken>(item);
+                                if (hasItem != null)
+                                {
+                                    k.id = hasItem.id;
+                                    var b = _dBService.FinanceDB.Update<limitUpBroken>(k);
+                                  
+                                    listData.Add(k.id);
+                                }
+                                else
+                                {
+
+                                    var a = _dBService.FinanceDB.Insert<limitUpBroken>(k);
+                                   
+                                    listData.Add(k.id);
+                                }
+                            }
+                            result.code = 200;
+                            result.data = listData;
+                            this.SetTaskLog(taskName, listData);
+                            
+                            Console.WriteLine(tT.Date.ToString());
+                        }
+                        else
+                        {
+                            result.message = res.message;
+                            result.code = 500;
+                        }
+                    }
+                    else
+                    {
+                        result.message = "HTTP失败";
+                        result.code = 400;
+                    }
+
+
+                }
+                catch (Exception ex)
+                {
+                    if(ex.Message!= "Value cannot be null. (Parameter 'source')")
+                    {
+                        var kk = "";
+                    }
                     continue;
                 }
                 finally
@@ -159,24 +261,104 @@ namespace GK2823.BizLib.Finance.Services
 
                         dynamicParams.Add("todayTime", nowTime);
                         dynamicParams.Add("tomorrowTime", tomTime);
-                        var totayDBData = _dBService.FinanceDB.Query<_PoolDetail>("select * from pool_detail where last_limit_up>=@todayTime and last_limit_up<@tomorrowTime", dynamicParams).ToList();
+                        var totayDBData = _dBService.FinanceDB.Query<LimitUp>("select * from pool_detail where last_limit_up>=@todayTime and last_limit_up<@tomorrowTime", dynamicParams).ToList();
 
                         var listData = new List<int>();
                         foreach (var item in data)
                         {
                             var hasItem = totayDBData.Where(p => p.symbol == item.symbol).FirstOrDefault();
-                            var k = _mapperService.MapCheck<_PoolDetail>(item);
+                            var k = _mapperService.MapCheck<LimitUp>(item);
                             if (hasItem != null)
                             {
                                 k.id = hasItem.id;
-                                var b = _dBService.FinanceDB.Update<_PoolDetail>(k);
+                                var b = _dBService.FinanceDB.Update<LimitUp>(k);
 
                                 listData.Add(k.id);
                             }
                             else
                             {
 
-                                var a = _dBService.FinanceDB.Insert<_PoolDetail>(k);
+                                var a = _dBService.FinanceDB.Insert<LimitUp>(k);
+                                listData.Add(k.id);
+                            }
+                        }
+                        result.code = 200;
+                        result.data = listData;
+                        this.SetTaskLog(taskName, listData);
+                    }
+                    else
+                    {
+                        result.message = res.message;
+                        result.code = 500;
+                    }
+                }
+                else
+                {
+                    result.message = "HTTP失败";
+                    result.code = 400;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.code = 500;
+                result.message = ex.Message + ex.StackTrace;
+                this.SetTaskLog("error_" + taskName, result.message);
+            }
+            return result;
+        }
+
+        public async Task<MsgResult> GetLimitUpBroken(string taskName)
+        {
+            var result = new MsgResult();
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get,
+               "https://flash-api.xuangubao.cn/api/pool/detail?pool_name=limit_up_broken");
+                //request.Headers.Add("Accept", "application/vnd.github.v3+json");
+                //request.Headers.Add("User-Agent", "HttpClientFactory-Sample");
+
+                var client = _clientFactory.CreateClient();
+
+                var response = await client.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseString = await response.Content.ReadAsStringAsync();
+                    var res = JsonConvert.DeserializeObject<MsgResult>(responseString);
+                    if (res.code == 20000)
+                    {
+                        var data = JsonConvert.DeserializeObject<List<PoolDetail>>(JsonConvert.SerializeObject(res.data));
+                        var nowTime = TimeHelper.ConvertToTimeStamp(DateTime.Now.Date);
+                        var tomTime = TimeHelper.ConvertToTimeStamp(DateTime.Now.AddDays(1).Date);
+                       
+                        data = data.Where(p => p.last_break_limit_up >= nowTime && p.last_break_limit_up < tomTime).ToList();
+                        if (data.Count == 0)
+                        {
+                            throw new Exception("无更新数据");
+                        }
+
+                        var dynamicParams = new DynamicParameters();
+
+                        dynamicParams.Add("todayTime", nowTime);
+                        dynamicParams.Add("tomorrowTime", tomTime);
+                        var totayDBData = _dBService.FinanceDB.Query<limitUpBroken>("select * from limit_up_broken where last_break_limit_up>=@todayTime and last_break_limit_up<@tomorrowTime", dynamicParams).ToList();
+
+                        var listData = new List<int>();
+                        foreach (var item in data)
+                        {
+                            var hasItem = totayDBData.Where(p => p.symbol == item.symbol).FirstOrDefault();
+                            var k = _mapperService.MapCheck<limitUpBroken>(item);
+                            if (hasItem != null)
+                            {
+                                k.id = hasItem.id;
+                                var b = _dBService.FinanceDB.Update<limitUpBroken>(k);
+
+                                listData.Add(k.id);
+                            }
+                            else
+                            {
+
+                                var a = _dBService.FinanceDB.Insert<limitUpBroken>(k);
                                 listData.Add(k.id);
                             }
                         }
@@ -226,7 +408,7 @@ namespace GK2823.BizLib.Finance.Services
                     sql += " and stock_type!=@stockType";
                     dynamicParams.Add("stockType", 1);
                 }
-                var totayDBData = _dBService.FinanceDB.Query<_PoolDetail>(sql, dynamicParams).ToList();
+                var totayDBData = _dBService.FinanceDB.Query<LimitUp>(sql, dynamicParams).ToList();
                 list = _mapperService.MapCheck<List<PoolDetail>>(totayDBData);
             }
             catch (Exception ex)
@@ -251,9 +433,9 @@ namespace GK2823.BizLib.Finance.Services
                     // dynamicParams.Add("stock_type", 1);
                 }
 
-                var totayDBData = _dBService.FinanceDB.Query<_PoolDetail>(sql).ToList();
+                var totayDBData = _dBService.FinanceDB.Query<LimitUp>(sql).ToList();
 
-                var resPoolDetail = new List<_PoolDetail>();
+                var resPoolDetail = new List<LimitUp>();
                 foreach (var item in totayDBData)
                 {
 
@@ -296,11 +478,11 @@ namespace GK2823.BizLib.Finance.Services
                     string sql = $"select {coloum} from view_pool_detail ";
 
 
-                    // var totayDBData = _dBService.FinancePPDB.Query<_PoolDetail>(sql).ToList();
-                    var totayDBData = _dBService.FinanceDB.Query<_PoolDetail>(sql).ToList();
-
-                    list = _mapperService.MapCheck<List<PoolDetail>>(totayDBData);
-                    _dBService.FinanceDB.Close();
+                 var totayDBData = _dBService.FinancePPDB.Query<LimitUp>(sql).ToList();
+                // var totayDBData = _dBService.FinanceDB.Query<LimitUp>(sql).ToList();
+                // _dBService.FinanceDB.Close();
+                list = _mapperService.MapCheck<List<PoolDetail>>(totayDBData);
+                  
 
                   
                
@@ -318,9 +500,25 @@ namespace GK2823.BizLib.Finance.Services
 
 
            
-            //var list = _dBService.FinancePPDB.Query<EverydayLBS>("select * from view_everyday_lbs").ToList();
-            var list = _dBService.FinanceDB.GetAll<EverydayLBS>().ToList();
-            _dBService.FinanceDB.Close();
+            var list = _dBService.FinancePPDB.Query<EverydayLBS>("select * from view_everyday_lbs").ToList();
+            //var list = _dBService.FinanceDB.GetAll<EverydayLBS>().ToList();
+           // _dBService.FinanceDB.Close();
+            return list;
+        }
+
+        public List<EverydayBrokenLBS> GetEverydayBrokenLBSList()
+        {
+            var list = _dBService.FinancePPDB.Query<EverydayBrokenLBS>("select * from view_everyday_broken_lbs").ToList();
+            //var list = _dBService.FinanceDB.GetAll<EverydayBrokenLBS>().ToList();
+            //_dBService.FinanceDB.Close();
+            return list;
+        }
+        
+        public List<BrokenPercent> GetEverydayBrokenPercent()
+        {
+            var list = _dBService.FinancePPDB.Query<BrokenPercent>("select * from view_broken_percent").ToList();
+           // var list = _dBService.FinanceDB.GetAll<BrokenPercent>().ToList();
+           // _dBService.FinanceDB.Close();
             return list;
         }
     }

@@ -86,6 +86,8 @@ namespace GK2823.UtilLib.Helpers
 
         void RemoveAllCache();
 
+        void SetRedisObject<T>(string redisKey, T t,double seconds);
+        T GetRedisObject<T>(string redisKey);
         #endregion
     }
 
@@ -123,6 +125,21 @@ namespace GK2823.UtilLib.Helpers
     #endregion
     public class RedisService: IRedisService
     {
+        public void SetRedisObject<T>(string redisKey, T t, double seconds)
+        {
+            
+        }
+
+        public T GetRedisObject<T>(string redisKey)
+        {
+            var redisObject = this.GetCache(redisKey);
+          
+            var aa = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(redisObject));
+
+            return aa;
+        }
+
+
         /// <summary>
         /// Redis缓存
         /// </summary>
@@ -271,7 +288,10 @@ namespace GK2823.UtilLib.Helpers
             public const string FAPI_GetPoolDetail = "FAPI_GetPoolDetail";
 
             public const string FAPI_GetEverydayLBS = "FAPI_GetEverydayLBS";
+            
+            public const string FAPI_GetEverydayBrokenLBS = "FAPI_GetEverydayBrokenLBS";
 
+            public const string FAPI_BrokenPercent = "FAPI_BrokenPercent";
         }
     }
 }

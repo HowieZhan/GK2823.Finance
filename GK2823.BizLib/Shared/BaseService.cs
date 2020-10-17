@@ -57,6 +57,31 @@ namespace GK2823.BizLib.Shared
                             //update
                         }
                         break;
+                    case "limitUpBroken":
+
+                        if (item == null)
+                        {
+                            //insert
+                            var taskLog = new TaskLog();
+                            taskLog.task_name = taskName;
+                            taskLog.last_time = todayTime;
+                            taskLog.remark = string.Join(",", remark as List<int>) + "|";
+                            taskLog.run_count = 1;
+                            _dBService.FinanceDB.Insert<TaskLog>(taskLog);
+                        }
+                        else
+                        {
+                            var taskLog = item;
+                            taskLog.task_name = taskName;
+                            taskLog.last_time = todayTime;
+                            taskLog.run_count++;
+                            var rkAdd = taskLog.remark.Split('|')[0];
+                            var rkUpdate = string.Join(",", remark as List<int>);
+                            taskLog.remark = rkAdd + "|" + rkUpdate;
+                            _dBService.FinanceDB.Update<TaskLog>(taskLog);
+                            //update
+                        }
+                        break;
                     case "error_get_from_xuangubao":
                         if (item == null)
                         {
@@ -79,6 +104,27 @@ namespace GK2823.BizLib.Shared
                             taskLog.remark = remark.ToString();
                             _dBService.FinanceDB.Update<TaskLog>(taskLog);
                             //update
+                        }
+                        break;
+                    case "error_limitUpBroken":
+                        if (item == null)
+                        {
+                            //insert
+                            var taskLog = new TaskLog();
+                            taskLog.task_name = taskName;
+                            taskLog.last_time = todayTime;
+                            taskLog.remark = remark.ToString();
+                            taskLog.run_count = 1;
+                            _dBService.FinanceDB.Insert<TaskLog>(taskLog);
+                        }
+                        else
+                        {
+                            var taskLog = item;
+                            taskLog.task_name = taskName;
+                            taskLog.last_time = todayTime;
+                            taskLog.run_count++;
+                            taskLog.remark = remark.ToString();
+                            _dBService.FinanceDB.Update<TaskLog>(taskLog);
                         }
                         break;
                     case "error_GetTodayPoolDetail":

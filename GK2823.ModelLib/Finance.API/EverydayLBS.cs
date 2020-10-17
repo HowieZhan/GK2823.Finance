@@ -13,4 +13,13 @@ namespace GK2823.ModelLib.Finance.API
         public string stime { get; set; }
         public string stock_chi_name { get; set; }
     }
+
+    [Table("view_everyday_broken_lbs")]
+    public class EverydayBrokenLBS
+    {
+        public int lb_count { get; set; }
+        [Key]
+        public string stime { get; set; }
+        public string stock_chi_name { get; set; }
+    }
 }
