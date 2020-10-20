@@ -35,7 +35,7 @@ namespace GK2823.BizLib.Finance.Services
         {
             var result = new MsgResult();
 
-            var tTime = Convert.ToDateTime("2020/04/13");
+            var tTime = Convert.ToDateTime("2020/10/01");
             for (var tT = tTime; tT < DateTime.Now; tT.AddDays(1))
             {
                 try
@@ -94,7 +94,7 @@ namespace GK2823.BizLib.Finance.Services
                             result.data = listData;
                             this.SetTaskLog(taskName, listData);
                             _dBService.FinanceDB.Close();
-                            Console.WriteLine(res.code);
+                            Console.WriteLine(tT);
                         }
                         else
                         {
@@ -112,6 +112,10 @@ namespace GK2823.BizLib.Finance.Services
                 }
                 catch (Exception ex)
                 {
+                    if(ex.Message!= "Value cannot be null. (Parameter 'source')")
+                    {
+                        var a = "";
+                    }
                     continue;
                 }
                 finally
@@ -128,7 +132,7 @@ namespace GK2823.BizLib.Finance.Services
         {
             var result = new MsgResult();
 
-            var tTime = Convert.ToDateTime("2020/04/13");
+            var tTime = Convert.ToDateTime("2020/10/01");
             for (var tT = tTime; tT < DateTime.Now; tT.AddDays(1))
             {
                 try
@@ -169,6 +173,8 @@ namespace GK2823.BizLib.Finance.Services
                             var totayDBData = _dBService.FinanceDB.Query<limitUpBroken>("select * from limit_up_broken where last_break_limit_up>=@todayTime and last_break_limit_up<@tomorrowTime", dynamicParams).ToList();
 
                             var listData = new List<int>();
+                            var addList = new List<limitUpBroken>();
+                            var upList = new List<limitUpBroken>();
                             foreach (var item in data)
                             {
                                 var hasItem = totayDBData.Where(p => p.symbol == item.symbol).FirstOrDefault();
@@ -177,17 +183,30 @@ namespace GK2823.BizLib.Finance.Services
                                 {
                                     k.id = hasItem.id;
                                     var b = _dBService.FinanceDB.Update<limitUpBroken>(k);
-                                  
+                                    upList.Add(k);
                                     listData.Add(k.id);
                                 }
                                 else
                                 {
 
                                     var a = _dBService.FinanceDB.Insert<limitUpBroken>(k);
-                                   
+                                    addList.Add(k);
                                     listData.Add(k.id);
                                 }
                             }
+                            //using (var trans = _dBService.FinanceDB.BeginTransaction())
+                            //{
+                            //    try
+                            //    {
+                            //        if (addList.Count() > 0) _dBService.FinanceDB.Insert(addList);
+                            //        if (upList.Count() > 0) _dBService.FinanceDB.Update(upList);
+                            //        trans.Commit();
+                            //    }
+                            //    catch(Exception ex)
+                            //    {
+                            //        trans.Rollback();
+                            //    }
+                            //}
                             result.code = 200;
                             result.data = listData;
                             this.SetTaskLog(taskName, listData);
@@ -226,6 +245,8 @@ namespace GK2823.BizLib.Finance.Services
             return result;
         }
 
+
+        //used
         public async Task<MsgResult> GetFromXuangubaoAsync(string taskName)
         {
             var result = new MsgResult();
@@ -282,6 +303,11 @@ namespace GK2823.BizLib.Finance.Services
                                 listData.Add(k.id);
                             }
                         }
+                        _redisService.RemoveCache(Constants.Redis.FAPI_BrokenPercent);
+                        _redisService.RemoveCache(Constants.Redis.FAPI_GetEverydayBrokenLBS);
+                        _redisService.RemoveCache(Constants.Redis.FAPI_GetEverydayLBS);
+                        _redisService.RemoveCache(Constants.Redis.FAPI_GetEverydayUpLBS);
+                        _redisService.RemoveCache(Constants.Redis.FAPI_GetPoolDetail);
                         result.code = 200;
                         result.data = listData;
                         this.SetTaskLog(taskName, listData);
@@ -306,7 +332,7 @@ namespace GK2823.BizLib.Finance.Services
             }
             return result;
         }
-
+        //used
         public async Task<MsgResult> GetLimitUpBroken(string taskName)
         {
             var result = new MsgResult();
@@ -362,6 +388,11 @@ namespace GK2823.BizLib.Finance.Services
                                 listData.Add(k.id);
                             }
                         }
+                        _redisService.RemoveCache(Constants.Redis.FAPI_BrokenPercent);
+                        _redisService.RemoveCache(Constants.Redis.FAPI_GetEverydayBrokenLBS);
+                        _redisService.RemoveCache(Constants.Redis.FAPI_GetEverydayLBS);
+                        _redisService.RemoveCache(Constants.Redis.FAPI_GetEverydayUpLBS);
+                        _redisService.RemoveCache(Constants.Redis.FAPI_GetPoolDetail);
                         result.code = 200;
                         result.data = listData;
                         this.SetTaskLog(taskName, listData);
@@ -496,10 +527,6 @@ namespace GK2823.BizLib.Finance.Services
 
        public List<EverydayLBS> GetEverydayLBSList()
         {
-
-
-
-           
             var list = _dBService.FinancePPDB.Query<EverydayLBS>("select * from view_everyday_lbs").ToList();
             //var list = _dBService.FinanceDB.GetAll<EverydayLBS>().ToList();
            // _dBService.FinanceDB.Close();
@@ -519,6 +546,14 @@ namespace GK2823.BizLib.Finance.Services
             var list = _dBService.FinancePPDB.Query<BrokenPercent>("select * from view_broken_percent").ToList();
            // var list = _dBService.FinanceDB.GetAll<BrokenPercent>().ToList();
            // _dBService.FinanceDB.Close();
+            return list;
+        }
+
+        public List<EverydayUpLBS> GetEverydayUpLBSList()
+        {
+            var list = _dBService.FinancePPDB.Query<EverydayUpLBS>("select * from view_everyday_up_lbs").ToList();
+            //var list = _dBService.FinanceDB.GetAll<EverydayLBS>().ToList();
+            // _dBService.FinanceDB.Close();
             return list;
         }
     }

@@ -51,6 +51,7 @@ namespace Finance.TaskRunner
 
         private void DoWork(object state)
         {
+            
             try
             {
                 switch (state.ToString())
@@ -64,22 +65,25 @@ namespace Finance.TaskRunner
                     case "test":
                         Test();
                         break;
+                  
                 }
             }
             catch (Exception ex)
             {
 #if RELEASE
-                _xuangubaoService.SendEmail(_appSettings.Value.MainEmail.UserAddress,"自动任务系统异常_finance.taskrunner",ex.Message+ex.StackTrace);
+                _xuangubaoService.SendEmail(_appSettings.Value.MainEmail.UserAddress,"爬虫异常",ex.Message+ex.StackTrace);
 #endif
             }
         }
 
         public void Test()
         {
-            _redisService.RemoveAllCache();
+           // _redisService.RemoveAllCache();
+            //_xuangubaoService.GetHistoryFromXuangubaoAsync("get_from_xuangubao");
+            _xuangubaoService.GetAllLimitUpBroken("limitUpBroken");
         }
 
-      
+
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
@@ -98,4 +102,7 @@ namespace Finance.TaskRunner
             });
         }
     }
+
+    
+
 }

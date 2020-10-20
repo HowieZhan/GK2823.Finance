@@ -14,6 +14,12 @@ namespace GK2823.ModelLib.Finance.API
         public string stock_chi_name { get; set; }
     }
 
+    [Table("view_everyday_up_lbs")]
+    public class EverydayUpLBS: EverydayLBS
+    {
+
+    }
+
     [Table("view_everyday_broken_lbs")]
     public class EverydayBrokenLBS
     {

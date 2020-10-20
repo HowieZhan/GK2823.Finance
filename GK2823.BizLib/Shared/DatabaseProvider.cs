@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GK2823.UtilLib.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -19,31 +20,36 @@ namespace GK2823.BizLib.Shared
         public abstract string GetConnectionString();
 
 
-//public static DbConnection _conn;
+        public static DbConnection _gconn;
 
-public DbConnection GetOpenConnection()
+        public DbConnection GetOpenConnection()
         {
-           
-               var _conn = Factory.CreateConnection();
-
-
+            if (AppSettingHelper.GetValue("appName") == "金融API")
+            {
+                var _conn = Factory.CreateConnection();
                 _conn.ConnectionString = GetConnectionString();
-            
-
-
                 if (_conn.State == ConnectionState.Closed)
                 {
 
                     _conn.Open();
 
                 }
-           
-            //else
-            // {
-            //     _conn.Close();
-            // }
+                return _conn;
+            }
+            else
+            {
+                if (_gconn == null)
+                {
+                    _gconn = Factory.CreateConnection();
+                    _gconn.ConnectionString = GetConnectionString();
 
-            return _conn;
+                }
+                if (_gconn.State == ConnectionState.Closed)
+                {
+                    _gconn.Open();
+                }
+                return _gconn;
+            }
         }
 
         public DbConnection GetClosedConnection()

@@ -37,7 +37,7 @@ namespace Finance.API.Controllers
                 if (_list.Count() > 0)
                 {
                     _redisService.SetCache(redisKey, _list);
-                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromMinutes(5));
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
                 }
             }
             else
@@ -61,7 +61,7 @@ namespace Finance.API.Controllers
                 if (_list.Count() > 0)
                 {
                     _redisService.SetCache(redisKey, _list);
-                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromMinutes(5));
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
                 }
             }
             else
@@ -85,7 +85,7 @@ namespace Finance.API.Controllers
                 if (_list.Count() > 0)
                 {
                     _redisService.SetCache(redisKey, _list);
-                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromMinutes(5));
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
                 }
             }
             else
@@ -109,7 +109,7 @@ namespace Finance.API.Controllers
                 if (_list.Count() > 0)
                 {
                     _redisService.SetCache(redisKey, _list);
-                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromMinutes(5));
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
                 }
             }
             else
@@ -119,5 +119,30 @@ namespace Finance.API.Controllers
             result.data = _list;
             return Ok(result);
         }
+
+        [HttpPost("api/GetEverydayUpLBS")]
+        public IActionResult GetEverydayUpLBS()
+        {
+            var result = new MsgResult();
+            var _list = new List<EverydayUpLBS>();
+            var redisKey = Constants.Redis.FAPI_GetEverydayUpLBS;
+            var redislist = _redisService.GetCache(redisKey) as List<EverydayUpLBS>;
+            if (redislist == null)
+            {
+                _list = _xuangubaoService.GetEverydayUpLBSList();
+                if (_list.Count() > 0)
+                {
+                    _redisService.SetCache(redisKey, _list);
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                }
+            }
+            else
+            {
+                _list = redislist;
+            }
+            result.data = _list;
+            return Ok(result);
+        }
+
     }
 }

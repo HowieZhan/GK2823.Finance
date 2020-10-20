@@ -15,8 +15,17 @@ namespace Finance.TaskRunner
 {
     class Program
     {
+        static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs e)
+        {
+            //Console.WriteLine(e.ExceptionObject.ToString());
+            //Console.WriteLine("Press Enter to continue");
+            //Console.ReadLine();
+            //Environment.Exit(1);
+            //位置错误
+        }
         static async Task Main(string[] args)
         {
+            System.AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionTrapper;
             var builder = new HostBuilder()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
@@ -30,13 +39,14 @@ namespace Finance.TaskRunner
                     {
                         config.AddCommandLine(args);
                     }
+                    
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddOptions();
 
 
-
+                    
 
 #if DEBUG
                     var AppSetting = new ConfigurationBuilder()
@@ -56,6 +66,7 @@ namespace Finance.TaskRunner
                     //if (scheduleSwitch.Equals(1))
                     //{
                     services.AddSingleton<IHostedService, ScheduleService>();
+                    services.AddSingleton<IHostedService, TimeJob>();
                     //}
                     services.Configure<AppSettings>(AppSetting);
                     services.AddHttpClient();
@@ -65,8 +76,10 @@ namespace Finance.TaskRunner
                     services.AddSingleton<IRedisService,RedisService>();
                     AutofacContainer.Build(services);
                 });
-
+           
             await builder.RunConsoleAsync();
         }
     }
+
+   
 }

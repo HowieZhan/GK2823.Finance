@@ -292,6 +292,8 @@ namespace GK2823.UtilLib.Helpers
             public const string FAPI_GetEverydayBrokenLBS = "FAPI_GetEverydayBrokenLBS";
 
             public const string FAPI_BrokenPercent = "FAPI_BrokenPercent";
+
+            public const string FAPI_GetEverydayUpLBS = "FAPI_GetEverydayUpLBS";
         }
     }
 }
