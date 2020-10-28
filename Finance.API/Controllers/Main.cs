@@ -19,9 +19,18 @@ namespace Finance.API.Controllers
         private readonly IRedisService _redisService;
         public Main()
         {
-            _xuangubaoService = AutofacContainer.Resolve<Service_xuangubao>();
-            _mapperService = AutofacContainer.Resolve<MapperService>();
-            _redisService = AutofacContainer.Resolve<IRedisService>();
+            if (_xuangubaoService == null)
+            {
+                _xuangubaoService = AutofacContainer.Resolve<Service_xuangubao>();
+            }
+            if (_mapperService == null)
+            {
+                _mapperService = AutofacContainer.Resolve<MapperService>();
+            }
+            if (_redisService == null)
+            {
+                _redisService = AutofacContainer.Resolve<IRedisService>();
+            }
         }
         [HttpPost("api/GetPoolDetail")]
         public IActionResult GetPoolDetail()
@@ -142,6 +151,53 @@ namespace Finance.API.Controllers
             }
             result.data = _list;
             return Ok(result);
+        }
+
+        [HttpPost("api/GetPoolDetailChartData")]
+        public async Task<IActionResult> GetPoolDetailChartData()
+        {
+            var result = new MsgResult();
+            var data0 = new List<APIPoolDetailWithoutST>();
+            var data1 = new List<EverydayLBS>();
+            var data2 = new List<EverydayBrokenLBS>();
+            var data3 = new List<BrokenPercent>();
+            var data4 = new List<EverydayUpLBS>();
+            var t0=  Task.Run(() =>
+            {      
+                return _xuangubaoService.CacheRefresh_APIPoolDetailWithoutST();
+            });
+            var t1 = Task.Run(() =>
+            {
+                return _xuangubaoService.CacheRefresh_EverydayLBS();
+            });
+            var t2 = Task.Run(() =>
+            {
+                return _xuangubaoService.CacheRefresh_EverydayBrokenLBS();
+            });
+            var t3 = Task.Run(() =>
+            {
+                return _xuangubaoService.CacheRefresh_BrokenPercent();
+            });
+            var t4 = Task.Run(() =>
+            {
+                return _xuangubaoService.CacheRefresh_EverydayUpLBS();
+            });
+            result.data =new { data0=t0.Result,data1 = t1.Result, data2 = t2.Result, data3 = t3.Result, data4 = t4.Result };
+            return Ok(result);
+        }
+
+        [HttpGet("api/test")]
+        public IActionResult Test(Tests test)
+        {
+            var aaass = test.aaa.ToList();
+            var k = aaass[0];
+            var result = new MsgResult();
+            return Ok(result);
+        }
+
+        public class Tests
+        {
+            public string[] aaa { get; set; }
         }
 
     }

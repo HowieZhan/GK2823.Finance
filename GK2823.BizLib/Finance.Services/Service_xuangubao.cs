@@ -4,6 +4,7 @@ using GK2823.BizLib.Shared;
 using GK2823.ModelLib.Finance.API;
 using GK2823.ModelLib.Shared;
 using GK2823.UtilLib.Helpers;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,22 +21,35 @@ namespace GK2823.BizLib.Finance.Services
         private readonly DBService _dBService;
       
         private static MapperService _mapperService;
+
         private readonly IRedisService _redisService;
+        private static IOptions<AppSettings> _appSettings;
         public Service_xuangubao()
         {
-            _clientFactory = AutofacContainer.Resolve<IHttpClientFactory>();
-          
-            _dBService = AutofacContainer.Resolve<DBService>();
-          
-            _mapperService = AutofacContainer.Resolve<MapperService>();
-            _redisService= AutofacContainer.Resolve<IRedisService>();
+            if (_clientFactory == null)
+            {
+                _clientFactory = AutofacContainer.Resolve<IHttpClientFactory>();
+            }
+            if (_dBService == null)
+            {
+                _dBService = AutofacContainer.Resolve<DBService>();
+            }
+            if (_mapperService == null)
+            {
+                _mapperService = AutofacContainer.Resolve<MapperService>();
+            }
+            if (_redisService == null)
+            {
+                _redisService = AutofacContainer.Resolve<IRedisService>();
+            }
+            _appSettings = AutofacContainer.Resolve<IOptions<AppSettings>>();
         }
 
         public async Task<MsgResult> GetHistoryFromXuangubaoAsync(string taskName)
         {
             var result = new MsgResult();
 
-            var tTime = Convert.ToDateTime("2020/10/01");
+            var tTime = Convert.ToDateTime("2020/10/21");
             for (var tT = tTime; tT < DateTime.Now; tT.AddDays(1))
             {
                 try
@@ -132,7 +146,7 @@ namespace GK2823.BizLib.Finance.Services
         {
             var result = new MsgResult();
 
-            var tTime = Convert.ToDateTime("2020/10/01");
+            var tTime = Convert.ToDateTime("2020/10/21");
             for (var tT = tTime; tT < DateTime.Now; tT.AddDays(1))
             {
                 try
@@ -497,26 +511,13 @@ namespace GK2823.BizLib.Finance.Services
 
         public List<PoolDetail> GetAllTopPoolDetailWithoutST()
         {
-            
-
-
             var list = new List<PoolDetail>();
             try
             {
-                
-              
-                    var coloum = "last_limit_up,limit_up_days,stock_chi_name";
-                    string sql = $"select {coloum} from view_pool_detail ";
-
-
-                 var totayDBData = _dBService.FinancePPDB.Query<LimitUp>(sql).ToList();
-                // var totayDBData = _dBService.FinanceDB.Query<LimitUp>(sql).ToList();
-                // _dBService.FinanceDB.Close();
+                var coloum = "last_limit_up,limit_up_days,stock_chi_name";
+                string sql = $"select {coloum} from view_pool_detail ";
+                var totayDBData = _dBService.FinancePPDB.Query<LimitUp>(sql).ToList();
                 list = _mapperService.MapCheck<List<PoolDetail>>(totayDBData);
-                  
-
-                  
-               
             }
             catch (Exception ex)
             {
@@ -525,7 +526,7 @@ namespace GK2823.BizLib.Finance.Services
             return list;
         }
 
-       public List<EverydayLBS> GetEverydayLBSList()
+        public List<EverydayLBS> GetEverydayLBSList()
         {
             var list = _dBService.FinancePPDB.Query<EverydayLBS>("select * from view_everyday_lbs").ToList();
             //var list = _dBService.FinanceDB.GetAll<EverydayLBS>().ToList();
@@ -556,5 +557,135 @@ namespace GK2823.BizLib.Finance.Services
             // _dBService.FinanceDB.Close();
             return list;
         }
+
+        public void SendFinanceEamils()
+        {
+            var t0 = this.CacheRefresh_BrokenPercent();
+            var t1 = this.CacheRefresh_EverydayBrokenLBS(); 
+            var t2 = this.CacheRefresh_EverydayLBS(); 
+            var t3 = this.CacheRefresh_EverydayUpLBS();
+            var t4 = this.CacheRefresh_APIPoolDetailWithoutST(); 
+           
+            StringBuilder sb = new StringBuilder(8);
+            sb.Append("<style>span{font-weight:700}</style>");
+            sb.Append($"<p><span>炸板率</span>：{Convert.ToInt32(t0.LastOrDefault().percent)}%</p>");
+            sb.Append($"<p><span>炸板数</span>：{t1.LastOrDefault().lb_count}：{t1.LastOrDefault().stock_chi_name}</p>");
+            sb.Append($"<p><span>二连板</span>：{t2.LastOrDefault().lb_count}：{t2.LastOrDefault().stock_chi_name}</p>");
+            sb.Append($"<p><span>涨停数</span>：{t3.LastOrDefault().lb_count}：{t3.LastOrDefault().stock_chi_name}</p>");
+            sb.Append($"<p><span>最高板</span>：{Convert.ToInt32(t4.LastOrDefault().limit_up_days)}：{t4.LastOrDefault().stock_chi_name}</p>");
+            sb.Append("<a href='http://fweb.gk2823.com/'>更多...</a>");
+            this.SendEmail(_appSettings.Value.MainEmail.UserAddress, "每日金融-" + DateTime.Now.Date.ToString("yyyy年MM月dd日"), sb.ToString());
+#if RELEASE
+            this.SendEmail(_appSettings.Value.BroMainEmail.UserAddress, "每日金融-" + DateTime.Now.Date.ToString("yyyy年MM月dd日"), sb.ToString());
+#endif          
+        }
+
+        public List<APIPoolDetailWithoutST> CacheRefresh_APIPoolDetailWithoutST()
+        {
+            var data0 = new List<APIPoolDetailWithoutST>();
+            var redisKey = Constants.Redis.FAPI_GetPoolDetail;
+            var redislist = _redisService.GetCache(redisKey) as List<APIPoolDetailWithoutST>;
+            if (redislist == null)
+            {
+                var list = this.GetAllTopPoolDetailWithoutST();
+                data0 = _mapperService.MapCheck<List<APIPoolDetailWithoutST>>(list);
+                if (data0.Count() > 0)
+                {
+                    _redisService.SetCache(redisKey, data0);
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                }
+            }
+            else
+            {
+                data0 = redislist;
+            }
+            return data0;
+        }
+
+        public List<EverydayLBS> CacheRefresh_EverydayLBS()
+        {
+            var data1 = new List<EverydayLBS>();
+            var redisKey = Constants.Redis.FAPI_GetEverydayLBS;
+            var redislist = _redisService.GetCache(redisKey) as List<EverydayLBS>;
+            if (redislist == null)
+            {
+                data1 = this.GetEverydayLBSList();
+                if (data1.Count() > 0)
+                {
+                    _redisService.SetCache(redisKey, data1);
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                }
+            }
+            else
+            {
+                data1 = redislist;
+            }
+            return data1;
+        }
+
+        public List<EverydayBrokenLBS> CacheRefresh_EverydayBrokenLBS()
+        {
+            var data2 = new List<EverydayBrokenLBS>();
+            var redisKey = Constants.Redis.FAPI_GetEverydayBrokenLBS;
+            var redislist = _redisService.GetCache(redisKey) as List<EverydayBrokenLBS>;
+            if (redislist == null)
+            {
+                data2 = this.GetEverydayBrokenLBSList();
+                if (data2.Count() > 0)
+                {
+                    _redisService.SetCache(redisKey, data2);
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                }
+            }
+            else
+            {
+                data2 = redislist;
+            }
+            return data2;
+        }
+
+        public List<BrokenPercent> CacheRefresh_BrokenPercent()
+        {
+            var data3 = new List<BrokenPercent>();
+            var redisKey = Constants.Redis.FAPI_BrokenPercent;
+            var redislist = _redisService.GetCache(redisKey) as List<BrokenPercent>;
+            if (redislist == null)
+            {
+                data3 = this.GetEverydayBrokenPercent();
+                if (data3.Count() > 0)
+                {
+                    _redisService.SetCache(redisKey, data3);
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                }
+            }
+            else
+            {
+                data3 = redislist;
+            }
+            return data3;
+        }
+
+        public List<EverydayUpLBS> CacheRefresh_EverydayUpLBS()
+        {
+            var data4 = new List<EverydayUpLBS>();
+            var redisKey = Constants.Redis.FAPI_GetEverydayUpLBS;
+            var redislist = _redisService.GetCache(redisKey) as List<EverydayUpLBS>;
+            if (redislist == null)
+            {
+                data4 = this.GetEverydayUpLBSList();
+                if (data4.Count() > 0)
+                {
+                    _redisService.SetCache(redisKey, data4);
+                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                }
+            }
+            else
+            {
+                data4 = redislist;
+            }
+            return data4;
+        }
+
+
     }
 }

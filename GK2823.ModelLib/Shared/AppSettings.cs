@@ -12,6 +12,7 @@ namespace GK2823.ModelLib.Shared
 
         public List<RangeTime> rangeTime { get; set; }
         public _MainEmail MainEmail { get; set; }
+        public _MainEmail BroMainEmail { get; set; }
         public _RabbitMQ RabbitMQ { get; set; }
         public _MQHandle MQHandle { get; set; }
         public _MainEmail Email { get; set; }

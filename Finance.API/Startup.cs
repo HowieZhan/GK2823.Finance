@@ -39,6 +39,7 @@ namespace Finance.API
             services.AddTransient<DBService>();
             services.AddHttpClient();
             services.AddSingleton<IRedisService, RedisService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddCors(options =>
             {
                 options.AddPolicy("any123", builder =>

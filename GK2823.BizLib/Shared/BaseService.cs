@@ -1,5 +1,7 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using GK2823.BizLib.Finance.Services;
+using GK2823.ModelLib.Finance.API;
 using GK2823.ModelLib.Shared;
 using GK2823.UtilLib.Helpers;
 using Microsoft.Extensions.Options;
@@ -17,7 +19,7 @@ namespace GK2823.BizLib.Shared
         public BaseService()
         {            
             _dBService = AutofacContainer.Resolve<DBService>();
-            _appsettings = AutofacContainer.Resolve<IOptions<AppSettings>>();
+            _appsettings = AutofacContainer.Resolve<IOptions<AppSettings>>();      
         }
 
         protected void SetTaskLog(string taskName,object remark=null)
@@ -251,7 +253,6 @@ namespace GK2823.BizLib.Shared
             }
             return seedNo;
         }
-
 
     }
 }

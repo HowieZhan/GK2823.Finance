@@ -10,6 +10,7 @@ using Microsoft.Extensions.Http;
 using GK2823.BizLib.Finance.Services;
 using GK2823.BizLib.Shared;
 using GK2823.ModelLib.Shared;
+using System.Threading;
 
 namespace Finance.TaskRunner
 {
@@ -61,12 +62,12 @@ namespace Finance.TaskRunner
                                     .Build();
 #endif
 
-
+                   
                     //int scheduleSwitch = int.Parse(AppSetting["AppConfigs:ScheduleSwitch"]);
                     //if (scheduleSwitch.Equals(1))
                     //{
-                    services.AddSingleton<IHostedService, ScheduleService>();
-                    services.AddSingleton<IHostedService, TimeJob>();
+                   
+                    
                     //}
                     services.Configure<AppSettings>(AppSetting);
                     services.AddHttpClient();
@@ -74,12 +75,15 @@ namespace Finance.TaskRunner
                     services.AddSingleton<Service_xuangubao>();
                     services.AddSingleton<MapperService>();
                     services.AddSingleton<IRedisService,RedisService>();
+
+                   
+                    services.AddSingleton<IHostedService, ScheduleService>();
+                    services.AddSingleton<IHostedService, TimeJob>();
                     AutofacContainer.Build(services);
+                    
                 });
            
             await builder.RunConsoleAsync();
         }
     }
-
-   
 }

@@ -78,12 +78,8 @@ namespace Finance.TaskRunner
 
         public void Test()
         {
-           // _redisService.RemoveAllCache();
-            //_xuangubaoService.GetHistoryFromXuangubaoAsync("get_from_xuangubao");
-            _xuangubaoService.GetAllLimitUpBroken("limitUpBroken");
+            _xuangubaoService.SendFinanceEamils();        
         }
-
-
 
         public Task StopAsync(CancellationToken cancellationToken)
         {

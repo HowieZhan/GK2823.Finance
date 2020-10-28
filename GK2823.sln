@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GK2823.ModelLib", "GK2823.M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GK2823.BizLib", "GK2823.BizLib\GK2823.BizLib.csproj", "{6337F5AA-4E75-4826-9DB1-F40BADA8BCF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.API", "Finance.API\Finance.API.csproj", "{50E6BA45-8EAC-4620-9238-6551368E7D24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finance.API", "Finance.API\Finance.API.csproj", "{50E6BA45-8EAC-4620-9238-6551368E7D24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO", "SSO\SSO.csproj", "{E81F3CA0-13EA-4B01-B5A7-1134DC81BC8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{50E6BA45-8EAC-4620-9238-6551368E7D24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50E6BA45-8EAC-4620-9238-6551368E7D24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50E6BA45-8EAC-4620-9238-6551368E7D24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E81F3CA0-13EA-4B01-B5A7-1134DC81BC8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E81F3CA0-13EA-4B01-B5A7-1134DC81BC8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E81F3CA0-13EA-4B01-B5A7-1134DC81BC8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E81F3CA0-13EA-4B01-B5A7-1134DC81BC8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -38,6 +38,20 @@ namespace Finance.TaskRunner
             return Task.CompletedTask;
         }
     }
+
+    public class SendFinanceEamils : IJob
+    {
+        private readonly Service_xuangubao _xuangubaoService;
+        public SendFinanceEamils()
+        {
+            _xuangubaoService = AutofacContainer.Resolve<Service_xuangubao>();
+        }
+        public Task Execute(IJobExecutionContext context)
+        {
+            _xuangubaoService.SendFinanceEamils();
+            return Task.CompletedTask;
+        }
+    }
     class TimeJob : IHostedService, IDisposable
     {
         public void Dispose()
@@ -59,23 +73,33 @@ namespace Finance.TaskRunner
             IJobDetail job2 = JobBuilder.Create<FinanceBrokenJob>()
      .WithIdentity("runJoib2", "group1")
      .Build();
+            IJobDetail job3 = JobBuilder.Create<SendFinanceEamils>()
+    .WithIdentity("runJoib3", "group2")
+    .Build();
 
 
-          
+
             ITrigger trigger = TriggerBuilder.Create()
     .WithIdentity("financeTrigger", "group0")
-  // .WithCronSchedule("5 5 15 * * ? ")
-  .WithCronSchedule("20 59 17 * * ? ")
+   .WithCronSchedule("5 5 15 * * ? ")
+  //.WithCronSchedule("20 59 17 * * ? ")
     .Build();
 
             ITrigger trigger2 = TriggerBuilder.Create()
   .WithIdentity("financeTrigger", "group1")
-  //.WithCronSchedule("6 5 15 * * ? ")
-  .WithCronSchedule("30 59 17 * * ? ")
+  .WithCronSchedule("20 5 15 * * ? ")
+  //.WithCronSchedule("30 59 17 * * ? ")
   .Build();
+
+            ITrigger trigger3 = TriggerBuilder.Create()
+.WithIdentity("financeTrigger", "group2")
+.WithCronSchedule("50 5 15 * * ? ")
+//.WithCronSchedule("30 59 17 * * ? ")
+.Build();
 
             await scheduler.ScheduleJob(job, trigger);
             await scheduler.ScheduleJob(job2, trigger2);
+            await scheduler.ScheduleJob(job3, trigger3);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
