@@ -76,8 +76,9 @@ namespace Finance.TaskRunner
                     services.AddSingleton<MapperService>();
                     services.AddSingleton<IRedisService,RedisService>();
 
-                   
+#if DEBUG
                     services.AddSingleton<IHostedService, ScheduleService>();
+#endif
                     services.AddSingleton<IHostedService, TimeJob>();
                     AutofacContainer.Build(services);
                     

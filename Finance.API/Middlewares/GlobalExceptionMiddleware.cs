@@ -25,12 +25,31 @@ namespace Finance.API.Middlewares
 
         public static IOptions<AppSettings> _appSettings;
 
+        public static List<string> NoAllowedApiUris;
+        public List<string> NoAllow()
+        {
+            if(NoAllowedApiUris==null)
+            {
+                NoAllowedApiUris = new List<string>();
+                NoAllowedApiUris.Add("/api/getpooldetail");
+                NoAllowedApiUris.Add("/api/geteverydaylbs");
+                NoAllowedApiUris.Add("/api/geteverydaybrokenlbs");
+                NoAllowedApiUris.Add("/api/geteverydaybrokenpercent");
+                NoAllowedApiUris.Add("/api/geteverydayuplbs");
+            }
+            return NoAllowedApiUris;
+        }
        
         public async Task Invoke(HttpContext httpContext)
         {
-            
+            var apiUri = httpContext.Request.Path.Value.ToLower();
+
             try
             {
+                if (NoAllow().Contains(apiUri))
+                {
+                    throw new Exception("NotAllowed");
+                }
                 await _requestDelegate.Invoke(httpContext);
                 var features = httpContext.Features;
             }
@@ -61,8 +80,15 @@ namespace Finance.API.Middlewares
                 title = "位置异常",
                 content = JsonConvert.SerializeObject(json)
             };
-            this.SendErrorEmail(post);
-            await httpContext.Response.WriteAsync(error);
+            if (ex.Message == "NotAllowed")
+            {
+                await httpContext.Response.WriteAsync(ex.Message);
+            }
+            else
+            {
+                this.SendErrorEmail(post);
+                await httpContext.Response.WriteAsync(error);
+            }
         }
 
         protected void SendErrorEmail(SendEmailOptions sendEmailOptions)

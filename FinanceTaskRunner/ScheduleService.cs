@@ -56,12 +56,12 @@ namespace Finance.TaskRunner
             {
                 switch (state.ToString())
                 {
-                    case "get_from_xuangubao":
-                        _xuangubaoService.GetFromXuangubaoAsync(state.ToString());
-                        ; break;
-                    case "limitUpBroken":
-                        _xuangubaoService.GetLimitUpBroken(state.ToString());
-                        ; break;
+                    //case "get_from_xuangubao":
+                    //    _xuangubaoService.GetFromXuangubaoAsync(state.ToString());
+                    //    ; break;
+                    //case "limitUpBroken":
+                    //    _xuangubaoService.GetLimitUpBroken(state.ToString());
+                    //    ; break;
                     case "test":
                         Test();
                         break;
@@ -78,7 +78,29 @@ namespace Finance.TaskRunner
 
         public void Test()
         {
-            _xuangubaoService.SendFinanceEamils();        
+            BaseFloadUp baseFloadUp = null;
+            var a = "test";
+            if(a=="test1")
+            {
+                baseFloadUp = new BuffFloadUp();
+            }
+            else
+            {
+                baseFloadUp = new MinFloadUp();
+            }
+            baseFloadUp.SetInfo();
+        }
+
+        public void HH()
+        {
+            Console.WriteLine("000");
+            return;
+            Console.WriteLine("111");
+        }
+
+        public void VV()
+        {
+            Console.WriteLine("222");
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
@@ -99,6 +121,35 @@ namespace Finance.TaskRunner
         }
     }
 
-    
+    public class MonBehaviour
+    {
+
+    }
+
+    public class BaseFloadUp:MonBehaviour
+    {
+        public virtual void SetInfo()
+        {
+            Console.WriteLine("123");
+        }
+    }
+
+    public class MinFloadUp: BaseFloadUp
+    {
+        public override void SetInfo()
+        {
+            Console.WriteLine("456");
+        }
+    }
+
+    public class BuffFloadUp : BaseFloadUp
+    {
+        public override void SetInfo()
+        {
+            Console.WriteLine("789");
+        }
+    }
+
+
 
 }

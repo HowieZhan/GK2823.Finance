@@ -18,31 +18,17 @@ namespace GK2823.BizLib.Finance.Services
     public class Service_xuangubao : BaseService
     {
         private readonly IHttpClientFactory _clientFactory;
-        private readonly DBService _dBService;
       
         private static MapperService _mapperService;
-
         private readonly IRedisService _redisService;
-        private static IOptions<AppSettings> _appSettings;
+        
         public Service_xuangubao()
         {
-            if (_clientFactory == null)
-            {
-                _clientFactory = AutofacContainer.Resolve<IHttpClientFactory>();
-            }
-            if (_dBService == null)
-            {
-                _dBService = AutofacContainer.Resolve<DBService>();
-            }
-            if (_mapperService == null)
-            {
-                _mapperService = AutofacContainer.Resolve<MapperService>();
-            }
-            if (_redisService == null)
-            {
-                _redisService = AutofacContainer.Resolve<IRedisService>();
-            }
-            _appSettings = AutofacContainer.Resolve<IOptions<AppSettings>>();
+            _clientFactory = AutofacContainer.Resolve<IHttpClientFactory>();
+           
+            _mapperService = AutofacContainer.Resolve<MapperService>();
+            _redisService = AutofacContainer.Resolve<IRedisService>();
+           
         }
 
         public async Task<MsgResult> GetHistoryFromXuangubaoAsync(string taskName)
@@ -508,7 +494,7 @@ namespace GK2823.BizLib.Finance.Services
             }
             return list;
         }
-
+        //used
         public List<PoolDetail> GetAllTopPoolDetailWithoutST()
         {
             var list = new List<PoolDetail>();
@@ -525,7 +511,7 @@ namespace GK2823.BizLib.Finance.Services
             }
             return list;
         }
-
+        //used
         public List<EverydayLBS> GetEverydayLBSList()
         {
             var list = _dBService.FinancePPDB.Query<EverydayLBS>("select * from view_everyday_lbs").ToList();
@@ -533,7 +519,7 @@ namespace GK2823.BizLib.Finance.Services
            // _dBService.FinanceDB.Close();
             return list;
         }
-
+        //used
         public List<EverydayBrokenLBS> GetEverydayBrokenLBSList()
         {
             var list = _dBService.FinancePPDB.Query<EverydayBrokenLBS>("select * from view_everyday_broken_lbs").ToList();
@@ -541,7 +527,7 @@ namespace GK2823.BizLib.Finance.Services
             //_dBService.FinanceDB.Close();
             return list;
         }
-        
+        //used
         public List<BrokenPercent> GetEverydayBrokenPercent()
         {
             var list = _dBService.FinancePPDB.Query<BrokenPercent>("select * from view_broken_percent").ToList();
@@ -549,7 +535,7 @@ namespace GK2823.BizLib.Finance.Services
            // _dBService.FinanceDB.Close();
             return list;
         }
-
+        //used
         public List<EverydayUpLBS> GetEverydayUpLBSList()
         {
             var list = _dBService.FinancePPDB.Query<EverydayUpLBS>("select * from view_everyday_up_lbs").ToList();
@@ -564,7 +550,13 @@ namespace GK2823.BizLib.Finance.Services
             var t1 = this.CacheRefresh_EverydayBrokenLBS(); 
             var t2 = this.CacheRefresh_EverydayLBS(); 
             var t3 = this.CacheRefresh_EverydayUpLBS();
-            var t4 = this.CacheRefresh_APIPoolDetailWithoutST(); 
+            var t4 = this.CacheRefresh_APIPoolDetailWithoutST();
+
+            var today = DateTime.Now.Date;
+            if (Convert.ToDateTime(TimeHelper.ConvertToyMd(t1.LastOrDefault().stime))!= today || Convert.ToDateTime(TimeHelper.ConvertToyMd(t3.LastOrDefault().stime))!= today)
+            {
+                return;
+            }
            
             StringBuilder sb = new StringBuilder(8);
             sb.Append("<style>span{font-weight:700}</style>");
@@ -591,8 +583,7 @@ namespace GK2823.BizLib.Finance.Services
                 data0 = _mapperService.MapCheck<List<APIPoolDetailWithoutST>>(list);
                 if (data0.Count() > 0)
                 {
-                    _redisService.SetCache(redisKey, data0);
-                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                    _redisService.SetCache(redisKey, data0, TimeSpan.FromHours(24));
                 }
             }
             else
@@ -612,8 +603,7 @@ namespace GK2823.BizLib.Finance.Services
                 data1 = this.GetEverydayLBSList();
                 if (data1.Count() > 0)
                 {
-                    _redisService.SetCache(redisKey, data1);
-                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                    _redisService.SetCache(redisKey, data1, TimeSpan.FromHours(24));
                 }
             }
             else
@@ -633,8 +623,7 @@ namespace GK2823.BizLib.Finance.Services
                 data2 = this.GetEverydayBrokenLBSList();
                 if (data2.Count() > 0)
                 {
-                    _redisService.SetCache(redisKey, data2);
-                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                    _redisService.SetCache(redisKey, data2, TimeSpan.FromHours(24));
                 }
             }
             else
@@ -654,8 +643,7 @@ namespace GK2823.BizLib.Finance.Services
                 data3 = this.GetEverydayBrokenPercent();
                 if (data3.Count() > 0)
                 {
-                    _redisService.SetCache(redisKey, data3);
-                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                    _redisService.SetCache(redisKey, data3, TimeSpan.FromHours(24));
                 }
             }
             else
@@ -675,8 +663,7 @@ namespace GK2823.BizLib.Finance.Services
                 data4 = this.GetEverydayUpLBSList();
                 if (data4.Count() > 0)
                 {
-                    _redisService.SetCache(redisKey, data4);
-                    _redisService.SetKeyExpire(redisKey, TimeSpan.FromHours(24));
+                    _redisService.SetCache(redisKey, data4, TimeSpan.FromHours(24));
                 }
             }
             else

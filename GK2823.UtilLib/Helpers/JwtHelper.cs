@@ -10,21 +10,20 @@ namespace GK2823.UtilLib.Helpers
 {
     public class JwtHelper
     {
-        public static string CreatJwtToken()
-        {       
+        public static string CreatJwtToken(string Id)
+        {
             var claimsIdentity = new ClaimsIdentity();
-            
-             claimsIdentity.AddClaim(new Claim(ClaimTypes.Name,"2"));
-             //claimsIdentity.AddClaim(new Claim(ClaimTypes.Sid, "3"));
-             //claimsIdentity.AddClaim(new Claim(ClaimTypes.Expired, "4"));
-             var tokenHandler = new JwtSecurityTokenHandler();
+
+            claimsIdentity.AddClaim(new Claim("gk2823", Id));
+            //claimsIdentity.AddClaim(new Claim(ClaimTypes.Sid, "3"));
+            //claimsIdentity.AddClaim(new Claim(ClaimTypes.Expired, "4"));
+            var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes("mysecret12345678");
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = claimsIdentity,
-                //Expires = DateTime.UtcNow.AddHours(10),
-                Expires=DateTime.Now.AddSeconds(30),
-                IssuedAt =DateTime.Now,
+                Expires = DateTime.UtcNow.AddSeconds(3600),
+                IssuedAt = DateTime.Now,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -33,13 +32,17 @@ namespace GK2823.UtilLib.Helpers
 
         public static string OpenJwtToken(string token)
         {
-            SecurityToken a = new JwtSecurityTokenHandler().ReadToken(token);
-            var k = new JwtSecurityToken(token);
-            var aaaaaaa = k.Claims.Where(p => p.Type == "userName11").FirstOrDefault();
-            
-            var aaa = a.GetType();
-            
-            return "";
+            string info = string.Empty;
+            try
+            {
+                var k = new JwtSecurityToken(token);
+                info = k.Claims.Where(p => p.Type == "gk2823").FirstOrDefault().Value;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return info;
         }
     }
 }
