@@ -22,7 +22,7 @@ namespace GK2823.UtilLib.Helpers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = claimsIdentity,
-                Expires = DateTime.UtcNow.AddSeconds(3600),
+                Expires = DateTime.UtcNow.AddSeconds(60),
                 IssuedAt = DateTime.Now,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
