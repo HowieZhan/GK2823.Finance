@@ -354,4 +354,6 @@ MigrationBackup/
 /Finance.API/appsettings.debug.json
 /FinanceTaskRunner/appsettings.debug.json
 /SSO
-/Admin.API/
+/Admin.API/bin/
+/Admin.API/appsettings.debug.json
+/Admin.API/appsettings.json
