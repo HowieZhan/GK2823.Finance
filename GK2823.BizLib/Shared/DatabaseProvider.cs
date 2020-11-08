@@ -7,6 +7,51 @@ using System.Text;
 
 namespace GK2823.BizLib.Shared
 {
+    public class DatabaseProviderV0 : IDbConnection
+    {
+        public string ConnectionString { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public int ConnectionTimeout => throw new NotImplementedException();
+
+        public string Database => throw new NotImplementedException();
+
+        public ConnectionState State => throw new NotImplementedException();
+
+        public IDbTransaction BeginTransaction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDbTransaction BeginTransaction(IsolationLevel il)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ChangeDatabase(string databaseName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Close()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDbCommand CreateCommand()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Open()
+        {
+            throw new NotImplementedException();
+        }
+    }
     public static class DatabaseProvider<TProvider> where TProvider : DatabaseProvider
     {
         public static TProvider Instance { get; } = Activator.CreateInstance<TProvider>();
@@ -24,32 +69,32 @@ namespace GK2823.BizLib.Shared
 
         public DbConnection GetOpenConnection()
         {
-            if (AppSettingHelper.GetValue("appName") == "金融API")
+            //if (AppSettingHelper.GetValue("appName") == "金融API")
+            //{
+            var _conn = Factory.CreateConnection();
+            _conn.ConnectionString = GetConnectionString();
+            if (_conn.State == ConnectionState.Closed)
             {
-                var _conn = Factory.CreateConnection();
-                _conn.ConnectionString = GetConnectionString();
-                if (_conn.State == ConnectionState.Closed)
-                {
 
-                    _conn.Open();
+                _conn.Open();
 
-                }
-                return _conn;
             }
-            else
-            {
-                if (_gconn == null)
-                {
-                    _gconn = Factory.CreateConnection();
-                    _gconn.ConnectionString = GetConnectionString();
+            return _conn;
+            //}
+            //else
+            //{
+            //if (_gconn == null)
+            //{
+            //    _gconn = Factory.CreateConnection();
+            //    _gconn.ConnectionString = GetConnectionString();
 
-                }
-                if (_gconn.State == ConnectionState.Closed)
-                {
-                    _gconn.Open();
-                }
-                return _gconn;
-            }
+            //}
+            //if (_gconn.State == ConnectionState.Closed)
+            //{
+            //    _gconn.Open();
+            //}
+            //return _gconn;
+            //}
         }
 
         public DbConnection GetClosedConnection()

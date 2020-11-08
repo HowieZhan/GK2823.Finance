@@ -1,6 +1,8 @@
 ﻿using GK2823.UtilLib.Helpers;
+using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Text;
 
@@ -17,4 +19,5 @@ namespace GK2823.BizLib.Shared
             return connStr;
         }
     }
+
 }

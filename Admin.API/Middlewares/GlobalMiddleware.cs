@@ -45,6 +45,7 @@ namespace Admin.API.Middlewares
             {
                 AuthUris = new List<string>();
                 AuthUris.Add("/api/login");
+                AuthUris.Add("/h3c/oasis_table_info");
             }
             return AuthUris;
         }

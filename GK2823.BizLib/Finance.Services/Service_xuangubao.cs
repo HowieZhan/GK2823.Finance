@@ -567,7 +567,7 @@ namespace GK2823.BizLib.Finance.Services
             sb.Append($"<p><span>最高板</span>：{Convert.ToInt32(t4.LastOrDefault().limit_up_days)}：{t4.LastOrDefault().stock_chi_name}</p>");
             sb.Append("<a href='http://fweb.gk2823.com/'>更多...</a>");
             this.SendEmail(_appSettings.Value.MainEmail.UserAddress, "每日金融-" + DateTime.Now.Date.ToString("yyyy年MM月dd日"), sb.ToString());
-#if RELEASE
+#if DEBUG
             this.SendEmail(_appSettings.Value.BroMainEmail.UserAddress, "每日金融-" + DateTime.Now.Date.ToString("yyyy年MM月dd日"), sb.ToString());
 #endif          
         }

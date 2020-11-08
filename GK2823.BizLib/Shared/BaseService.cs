@@ -4,6 +4,7 @@ using GK2823.BizLib.Finance.Services;
 using GK2823.ModelLib.Finance.API;
 using GK2823.ModelLib.Shared;
 using GK2823.UtilLib.Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,12 @@ namespace GK2823.BizLib.Shared
     {
         protected readonly DBService _dBService;
         protected readonly IOptions<AppSettings> _appSettings;
+        protected readonly IHttpContextAccessor _httpContextAccessor;
         public BaseService()
         {            
             _dBService = AutofacContainer.Resolve<DBService>();
-            _appSettings = AutofacContainer.Resolve<IOptions<AppSettings>>();      
+            _appSettings = AutofacContainer.Resolve<IOptions<AppSettings>>();
+            _httpContextAccessor= AutofacContainer.Resolve<IHttpContextAccessor>();
         }
 
         protected void SetTaskLog(string taskName,object remark=null)
@@ -271,11 +274,11 @@ namespace GK2823.BizLib.Shared
             return seedNo;
         }
 
-        protected Page<T> GetPage<T>(PageSet pageSet)
+        public Page<T> GetPage<T>(PageSet pageSet)
         {
             var page = new Page<T>();
             var sql = $"select  {pageSet.column} from  {pageSet.table} where 1=1 {pageSet.sqlWhere} {pageSet.sqlOrder}   limit {pageSet.pageSize} offset {pageSet.pageIndex}-1";
-            page.row = _dBService.AdminDB.QueryAsync<T>(sql).Result.ToList();
+            page.rows = _dBService.AdminDB.QueryAsync<T>(sql).Result.ToList();
             page.totalNum = _dBService.AdminDB.QueryFirstAsync<int>($"select count(*) from {pageSet.table}").Result;
             return page;
         }

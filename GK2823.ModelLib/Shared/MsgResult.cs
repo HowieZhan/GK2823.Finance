@@ -14,5 +14,17 @@ namespace GK2823.ModelLib.Shared
             this.code = 200;
             this.message = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
+
+        public void SetCustomErr(string msg,int _code=999)
+        {
+            message = msg;
+            code= _code;
+        }
+    }
+
+    public enum ErrorEnums
+    {
+        ErrorLogin=402,
+        ErrorCustom=999
     }
 }

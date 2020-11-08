@@ -27,7 +27,10 @@ namespace Admin.API.Controllers
             var req = Request;
             var result = new MsgResult();
             result.data = _accountService.CheckLogin(user.username, user.password);
-            result.code = result.data.ToString() == string.Empty ? 402 : 200;            
+            if(string.IsNullOrEmpty(result.data.ToString()))
+            {
+                result.SetCustomErr("登录异常");
+            }
             return Ok(result);
         }
 
@@ -42,7 +45,10 @@ namespace Admin.API.Controllers
             }
             var result = new MsgResult();
             result.data = _accountService.GetClientAppInfo(token);
-            result.code = result.data == null ? 401 : 200;
+            if(result.data==null)
+            {
+                result.SetCustomErr("尝试重新登录", 401);
+            }
             return ReJson(result);
         }
 
@@ -50,7 +56,8 @@ namespace Admin.API.Controllers
         public IActionResult GetMenu()
         {         
             var result = new MsgResult();
-            
+            var token = this.GetJWT();
+            var menus = _accountService.GetMenuByRole();
           
 
            
@@ -87,6 +94,16 @@ namespace Admin.API.Controllers
             var result = new MsgResult();
             result.data = _accountService.CreateRole(role);
             result.code = result.data == null ? 500 : 200;
+            return ReJson(result);
+        }
+
+        [HttpPost("api/get_page_menu")]
+        public IActionResult GetPageMenu([FromBody] PageSet page)
+        {
+            var result = new MsgResult();
+            page.table = Menu.TK;
+            var pageData = _accountService.GetPage<Menu>(page);
+            result.data = pageData;
             return ReJson(result);
         }
 

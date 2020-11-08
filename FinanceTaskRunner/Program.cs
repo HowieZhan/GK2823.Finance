@@ -11,6 +11,7 @@ using GK2823.BizLib.Finance.Services;
 using GK2823.BizLib.Shared;
 using GK2823.ModelLib.Shared;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
 
 namespace Finance.TaskRunner
 {
@@ -75,9 +76,10 @@ namespace Finance.TaskRunner
                     services.AddSingleton<Service_xuangubao>();
                     services.AddSingleton<MapperService>();
                     services.AddSingleton<IRedisService,RedisService>();
+                    services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 #if DEBUG
-                    services.AddSingleton<IHostedService, ScheduleService>();
+                    services.AddHostedService<DevService>();
 #endif
                     services.AddSingleton<IHostedService, TimeJob>();
                     AutofacContainer.Build(services);

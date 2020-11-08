@@ -6,7 +6,7 @@ namespace GK2823.ModelLib.Shared
 {
     public class Page<T>
     {
-        public List<T> row { get; set; }
+        public List<T> rows{ get; set; }
         public int totalNum { get; set; }
     }
 

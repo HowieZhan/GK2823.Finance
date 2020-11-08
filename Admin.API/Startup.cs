@@ -32,8 +32,9 @@ namespace Admin.API
             services.AddControllers();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<MapperService>();
-            services.AddTransient<AccountService>();
-            services.AddTransient<DBService>();
+            services.AddSingleton<AccountService>();
+            services.AddSingleton<H3CService>();
+            services.AddSingleton<DBService>();
             services.AddHttpClient();
             services.AddSingleton<IRedisService, RedisService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

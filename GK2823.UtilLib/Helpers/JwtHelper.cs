@@ -10,7 +10,7 @@ namespace GK2823.UtilLib.Helpers
 {
     public class JwtHelper
     {
-        public static string CreatJwtToken(string Id)
+        public static string CreatJwtToken(string Id,int seconds=3600)
         {
             var claimsIdentity = new ClaimsIdentity();
 
@@ -22,7 +22,7 @@ namespace GK2823.UtilLib.Helpers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = claimsIdentity,
-                Expires = DateTime.UtcNow.AddSeconds(60),
+                Expires = DateTime.UtcNow.AddSeconds(seconds),
                 IssuedAt = DateTime.Now,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -36,6 +36,7 @@ namespace GK2823.UtilLib.Helpers
             try
             {
                 var k = new JwtSecurityToken(token);
+                //userId|userName
                 info = k.Claims.Where(p => p.Type == "gk2823").FirstOrDefault().Value;
             }
             catch (Exception ex)

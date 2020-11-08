@@ -5,8 +5,10 @@ using GK2823.UtilLib.Helpers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -78,30 +80,82 @@ namespace Finance.TaskRunner
 
         public void Test()
         {
-            BaseFloadUp baseFloadUp = null;
-            var a = "test";
-            if(a=="test1")
+            string fileUrl = Path.Combine("E:\\Main\\gk2823_files\\json", "table0.json");
+            JsonFileHelper jsonFileHelper = new JsonFileHelper(fileUrl);
+            var data= jsonFileHelper.ReadList<Table0>("RECORDS");
+            List<JosnTab0> jsonTabs = new List<JosnTab0>();
+            foreach(var a in data.GroupBy(p=>p.REP_OFFICE).ToList())
             {
-                baseFloadUp = new BuffFloadUp();
+                JosnTab0 jsonTab = new JosnTab0();
+                jsonTab.officeName = a.Key.ToString();
+                jsonTab.details = new List<JosnTab0.Details>();
+                foreach(var b in a.ToList().GroupBy(p=>p.AGENTLEVEL).ToList())
+                {
+                    var detail = new JosnTab0.Details();
+                    detail.agentName = b.Key.ToString();
+                    detail.bindThridAgenNum = b.Sum(p => p.BINDTHIRDCOUNT);
+                    detail.cloudGoodNum = b.Sum(p => p.BINDSECONDCOUNT);
+                    detail.goodsDetails = new List<JosnTab0.Details.GoodsDetails>();
+                    foreach(var c in b.ToList().GroupBy(p=>p.CATALOGNAME).ToList())
+                    {
+                        var goodsDetail = new JosnTab0.Details.GoodsDetails();
+                        goodsDetail.allLightCount = c.FirstOrDefault().ALLLIGHTUPNUM;
+                        goodsDetail.goodNum = $"{c.Key.ToString()}："+c.FirstOrDefault().LOCALLIGHTUPNUM.ToString();
+                        var present = c.FirstOrDefault().LOCALLIGHTUPNUM/ c.FirstOrDefault().ALLLIGHTUPNUM;
+                        goodsDetail.goodPresent = $"{c.Key.ToString()}：" + (present > 0 ? present.ToString("0%") : "0%");
+                        goodsDetail.provinceMoney = c.FirstOrDefault().MONEY;
+                        goodsDetail.provinceNum = c.FirstOrDefault().SELLNUM;
+                        detail.goodsDetails.Add(goodsDetail);
+                    }
+                    jsonTab.details.Add(detail);
+                }
+                Console.WriteLine(JsonConvert.SerializeObject(jsonTab));
+                Console.WriteLine("-----------------------------------");
+                jsonTabs.Add(jsonTab);
             }
-            else
-            {
-                baseFloadUp = new MinFloadUp();
-            }
-            baseFloadUp.SetInfo();
         }
 
-        public void HH()
+        public class JosnTab0
         {
-            Console.WriteLine("000");
-            return;
-            Console.WriteLine("111");
+            public string officeName { get; set; }
+            public List<Details> details { get; set; }
+            public class Details { 
+                public string agentName { get; set; }
+                public double bindThridAgenNum { get; set; }
+                public double cloudGoodNum { get; set; }
+
+                public List<GoodsDetails> goodsDetails { get; set; }
+                public class GoodsDetails
+                { 
+                    public double allLightCount { get; set; }
+                    public string goodNum { get; set; }
+                    public string goodPresent { get; set; }
+                    public double provinceMoney { get; set; }
+                    public double provinceNum { get; set; }
+                }
+
+
+
+
+
+
+
+            }
         }
 
-        public void VV()
+        public class Table0
         {
-            Console.WriteLine("222");
+            public string AGENTLEVEL { get; set; }
+            public string REP_OFFICE { get; set; }
+            public string CATALOGNAME { get; set; }
+            public double LOCALLIGHTUPNUM { get; set; }
+            public double ALLLIGHTUPNUM { get; set; }
+            public double SELLNUM { get; set; }
+            public double MONEY { get; set; }
+            public double BINDTHIRDCOUNT { get; set; }
+            public double BINDSECONDCOUNT { get; set; }
         }
+       
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
@@ -121,35 +175,7 @@ namespace Finance.TaskRunner
         }
     }
 
-    public class MonBehaviour
-    {
-
-    }
-
-    public class BaseFloadUp:MonBehaviour
-    {
-        public virtual void SetInfo()
-        {
-            Console.WriteLine("123");
-        }
-    }
-
-    public class MinFloadUp: BaseFloadUp
-    {
-        public override void SetInfo()
-        {
-            Console.WriteLine("456");
-        }
-    }
-
-    public class BuffFloadUp : BaseFloadUp
-    {
-        public override void SetInfo()
-        {
-            Console.WriteLine("789");
-        }
-    }
-
+ 
 
 
 }

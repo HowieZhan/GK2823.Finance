@@ -4,6 +4,7 @@ using GK2823.BizLib.Shared;
 using GK2823.ModelLib.Admin.API;
 using GK2823.ModelLib.Shared;
 using GK2823.UtilLib.Helpers;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace GK2823.BizLib.Admin.Services
             var item = GetUserInfo(loginName, loginPwd);
             if (item!=null)
             {
-               token= JwtHelper.CreatJwtToken(item.user_id + "|"+ item.user_name);
+               token= JwtHelper.CreatJwtToken(item.user_id + "|"+ item.user_name,3600);
             }
             return token;
         }
@@ -52,7 +53,7 @@ namespace GK2823.BizLib.Admin.Services
             {
                 case "管理API":
                     item.others = new Dictionary<string, object>();
-                    var menus = new List<Menu>();
+                    var menus = this.GetMenuByRole();
                    
                     item.others.Add("menu", menus);
                     break;
@@ -128,6 +129,7 @@ namespace GK2823.BizLib.Admin.Services
 
         #endregion
 
+        #region menu
         public int CreateMenu(Menu menu)
         {
             menu.code = this.CreateSeedNo(SeedTarget.Admin.ST_MENU);
@@ -139,11 +141,53 @@ namespace GK2823.BizLib.Admin.Services
             return _dBService.AdminDB.InsertAsync<RoleMenu>(roleMenu).Result;
         }
 
-        public List<VWRoleMenu> GetMenuByRole(List<string> strRoles)
+        public List<VWRoleMenu> GetMenuByRole()
         {
-           
+            var strRoles = this.GetRolesByToken();
             var item = _dBService.AdminDB.GetAll<VWRoleMenu>().Where(p => strRoles.Contains(p.role_code)).DistinctBy(p=>p.menu_code).ToList();
-            return item;
+            var _item = new List<VWRoleMenu>();
+            item.ForEach(p =>
+            {
+                if(string.IsNullOrEmpty(p.parent_code))
+                {
+                    _item.Add(p);
+                }
+                else
+                {
+                    var e = _item.Where(k => k.menu_code == p.parent_code).FirstOrDefault();
+                    if (e != null)
+                    {
+                        if(e.children==null)
+                        {
+                            e.children = new List<VWRoleMenu>();
+                            e.children.Add(p);
+                        }
+                        else
+                        {
+                            e.children.Add(p);
+                        }
+                    }
+                }
+            });
+            return _item;
         }
+
+        public List<string> GetRolesByToken()
+        {
+            var tokenHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
+            string token = null;
+            if (tokenHeader != null && tokenHeader.StartsWith("Bearer"))
+            {
+                token = tokenHeader.Substring("Bearer ".Length).Trim();
+            }
+            var userId = JwtHelper.OpenJwtToken(token).Split('|')[0];
+            //var roles = _dBService.AdminDB.GetAll<UserRole>().Where(p => p.user_id == userId).Select(p=>p.role_code).ToList();
+            var roles = _dBService.AdminDB.Query<UserRole>("select * from user_roles where user_id=@userId", new
+            {
+                userId = userId
+            }).ToList().Select(p => p.role_code).ToList();
+            return roles;
+        }
+        #endregion
     }
 }

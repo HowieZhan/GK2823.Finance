@@ -9,13 +9,33 @@ namespace GK2823.BizLib.Shared
 {
     public class DBService
     {
-        //private ISqlDapper _FinanceIntDB { get; } =
-        //   DBServerProvider.SqlDapper;
-       // public DbConnection _FinanceDB { get { return _FinanceIntDB.; } }
-        public   DbConnection FinanceDB { get { return FinanceIntDB.GetOpenConnection(); } }
-        public DbConnection FYJSystemDB { get { return FYJSystemIntDB.GetOpenConnection(); } }
+        public static DbConnection _FinanceDB;
+        public   DbConnection FinanceDB { get {
+                if (_FinanceDB == null)
+                {
+                    _FinanceDB= FinanceIntDB.GetOpenConnection();
+                }
+                return _FinanceDB;
+            } }
+        public static DbConnection _FYJSystemDB;
+        public DbConnection FYJSystemDB {
+            get {
+                if (_FYJSystemDB == null)
+                {
+                    _FYJSystemDB= FYJSystemIntDB.GetOpenConnection();
+                }
+                return _FYJSystemDB;
+            } }
 
-        public DbConnection AdminDB { get { return AdminIntDB.GetOpenConnection(); } }
+        public static DbConnection _AdminDB;
+        public DbConnection AdminDB { get {
+                if (_AdminDB == null)
+                {
+                    _AdminDB= AdminIntDB.GetOpenConnection();
+                }
+                return _AdminDB;
+            } }
+
 
         private FinanceDB FinanceIntDB { get; } =
            DatabaseProvider<FinanceDB>.Instance;

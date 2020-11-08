@@ -61,6 +61,7 @@ namespace Finance.TaskRunner
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+           
             StdSchedulerFactory factory = new StdSchedulerFactory();
 
             // get a scheduler
@@ -81,19 +82,19 @@ namespace Finance.TaskRunner
 
             ITrigger trigger = TriggerBuilder.Create()
     .WithIdentity("financeTrigger", "group0")
-   .WithCronSchedule("5 5 15 * * ? ")
+   .WithCronSchedule("5 55 15 * * ? ")
   //.WithCronSchedule("20 59 17 * * ? ")
     .Build();
 
             ITrigger trigger2 = TriggerBuilder.Create()
   .WithIdentity("financeTrigger", "group1")
-  .WithCronSchedule("20 5 15 * * ? ")
+  .WithCronSchedule("20 55 15 * * ? ")
   //.WithCronSchedule("30 59 17 * * ? ")
   .Build();
 
             ITrigger trigger3 = TriggerBuilder.Create()
 .WithIdentity("financeTrigger", "group2")
-.WithCronSchedule("50 5 15 * * ? ")
+.WithCronSchedule("50 55 15 * * ? ")
 //.WithCronSchedule("30 59 17 * * ? ")
 .Build();
 
